@@ -5,6 +5,8 @@ import LoginDialog from './components/LoginDialog';
 import { AppState } from './misc/types';
 import QUERIES from './misc/queries';
 import AppSnackBar from './components/AppSnackBar';
+import AppMenu from './components/AppMenu';
+import MyAlerts from './pages/MyAlerts';
 
 const initialAppState: AppState = {
   loginState: { apiKey: '', connected: false, isLoading: false },
@@ -19,7 +21,7 @@ console.log(initialAppState);
 
 function App() {
   const [loginState, setLoginState] = useState(initialAppState.loginState);
-  // const [navState, setNavState] = useState(initialAppState.navState);
+  const [navState, setNavState] = useState(initialAppState.navState);
   // const [subscriptionState, setSubscriptionState] = useState(initialAppState.subscriptionState);
   // const [metricState, setMetricState] = useState(initialAppState.metricState);
   // const [selectedMetricState, setSelectedMetricState] = useState(initialAppState.selectedMetricState);
@@ -39,11 +41,11 @@ function App() {
 
   return (
     <div>
-      <h1>APP</h1>
+      <AppMenu navState={navState} onClickTab={(tabIndex) => setNavState({ ...navState, tabIndex })} />
+      { navState.tabIndex === 0 ? <SearchMetrics /> : null }
+      { navState.tabIndex === 1 ? <MySubscriptions /> : null }
+      { navState.tabIndex === 2 ? <MyAlerts /> : null }
       <LoginDialog loginState={loginState} onClickLogin={onClickLogin} />
-      <SearchMetrics />
-      <MySubscriptions />
-      <MySubscriptions />
       <AppSnackBar appSnackBarState={appSnackBarState} />
     </div>
   );

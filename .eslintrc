@@ -24,7 +24,8 @@
     "import/no-extraneous-dependencies": "off",
     "no-unused-vars": "off",
     "react/destructuring-assignment": "off",
-    "react/no-unused-prop-types": "off"
+    "react/no-unused-prop-types": "off",
+    "react/jsx-props-no-spreading": "off"
   }
 }
   
