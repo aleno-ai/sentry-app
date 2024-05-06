@@ -38,12 +38,17 @@ type SelectedMetricState = {
     metric: Metric | null
 }
 
+type AppSnackBarState = {
+    message: string | null
+}
+
 type AppState = {
     loginState: LoginState
     navState: NavState
     subscriptionState: SubscriptionState
     metricState: MetricState
     selectedMetricState: SelectedMetricState
+    appSnackBarState: AppSnackBarState
 }
 
 export type {
@@ -55,4 +60,5 @@ export type {
   MetricState,
   SelectedMetricState,
   AppState,
+  AppSnackBarState,
 };
