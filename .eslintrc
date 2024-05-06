@@ -19,7 +19,8 @@
       "max-len": ["error", { "code": 500, "tabWidth": 4 }],
       "object-curly-newline": "off",
       "import/extensions": "off",
-      "import/no-unresolved": "off"
+      "import/no-unresolved": "off",
+      "no-console": "off"
     }
   }
   
