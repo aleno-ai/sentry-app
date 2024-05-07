@@ -5,7 +5,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React from 'react';
 import Divider from '@mui/material/Divider';
-import { MetricAlert, Metric } from '../misc/types';
+import { MetricAlert, Metric, MetricAlertState } from '../misc/types';
 import utils from '../misc/utils';
 
 function MetricAlertLine(props: { metricAlert: MetricAlert, onViewChart: (metric: Metric) => Promise<void> }) {
@@ -22,7 +22,6 @@ function MetricAlertLine(props: { metricAlert: MetricAlert, onViewChart: (metric
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1-content"
-        id="panel1-header"
       >
         <Grid container>
           <Grid item xs={3}>
@@ -92,12 +91,26 @@ function MetricAlertLine(props: { metricAlert: MetricAlert, onViewChart: (metric
   );
 }
 
-function MyAlerts(props: { metricAlerts: MetricAlert[], onViewChart: (metric: Metric) => Promise<void> }) {
+function MyAlerts(props: { metricAlertState: MetricAlertState, onViewChart: (metric: Metric) => Promise<void>, onClickRefresh: () => Promise<void> }) {
   return (
     <>
-      <Typography variant="h4" gutterBottom style={{ marginBottom: '2.5rem' }}>Alert history</Typography>
-      { props.metricAlerts.length === 0 ? <Typography>No alert to be displayed</Typography> : null }
-      {props.metricAlerts.map((metricAlert) => (<MetricAlertLine key={metricAlert.id} onViewChart={props.onViewChart} metricAlert={metricAlert} />))}
+      <Grid container justifyContent="space-between" alignItems="flex-end">
+        <Grid item>
+          <Typography variant="h4" gutterBottom>Alert history</Typography>
+        </Grid>
+        <Grid xs={1} item>
+          <Button disabled={props.metricAlertState.isLoading} fullWidth variant="contained" onClick={props.onClickRefresh}>refresh</Button>
+        </Grid>
+      </Grid>
+      {props.metricAlertState.isLoading ? <Typography>Loading metric alerts...</Typography> : null}
+      {(!props.metricAlertState.isLoading && (props.metricAlertState.metricAlerts.length === 0)) ? <Typography>No alert to be displayed</Typography> : null }
+      {
+        !props.metricAlertState.isLoading ? (
+          <div style={{ marginTop: '1rem' }}>
+            {props.metricAlertState.metricAlerts.map((metricAlert) => (<MetricAlertLine key={metricAlert.id} onViewChart={props.onViewChart} metricAlert={metricAlert} />))}
+          </div>
+        ) : null
+      }
     </>
   );
 }

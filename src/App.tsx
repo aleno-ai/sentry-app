@@ -15,7 +15,7 @@ const initialAppState: AppState = {
   loginState: { isLoading: false, authData: null },
   navState: { tabIndex: 0 },
   subscriptionState: { subscriptions: [], associatedMetrics: [], isLoading: false },
-  metricState: { metrics: mockData.metrics, isLoading: false },
+  metricState: { metrics: [], isLoading: false },
   selectedMetricState: { metric: null, isLoading: false, dataPoints: [] },
   metricAlertState: { metricAlerts: [], isLoading: false },
   appSnackBarState: { message: null },
@@ -43,10 +43,10 @@ function App() {
     const { subscriptions, associatedMetrics } = authDataResult ? (await QUERIES.getSubscriptions(providedApiKey)) : { subscriptions: [], associatedMetrics: [] };
 
     setAppSnackBarState({ ...appSnackBarState, message: 'Fetching alert history...' });
-    const alertHistory = await QUERIES.getAlertHistory(providedApiKey, authDataResult.user.id);
+    const metricAlerts = await QUERIES.getAlertHistory(providedApiKey, authDataResult.user.id);
 
     setSubscriptionState({ ...subscriptionState, subscriptions, associatedMetrics, isLoading: false });
-    setMetricAlertState({ ...metricAlertState, isLoading: false });
+    setMetricAlertState({ ...metricAlertState, metricAlerts, isLoading: false });
     setLoginState({ ...loginState, authData: authDataResult, isLoading: false });
 
     setAppSnackBarState({ ...appSnackBarState, message: null });
@@ -94,13 +94,21 @@ function App() {
     setAppSnackBarState({ message: null });
   };
 
+  const onRefreshMetricAlerts = async () => {
+    setMetricAlertState({ ...metricAlertState, isLoading: true });
+    setAppSnackBarState({ message: 'Refreshing metric alerts...' });
+    const metricAlerts = await QUERIES.getAlertHistory(authData.account.apiKeyHash, authData.user.id);
+    setMetricAlertState({ ...metricAlertState, metricAlerts, isLoading: false });
+    setAppSnackBarState({ message: null });
+  };
+
   return (
     <div>
       <AppMenu navState={navState} onClickTab={(tabIndex) => setNavState({ ...navState, tabIndex })} />
       <Box sx={{ p: 3 }}>
         { navState.tabIndex === 0 ? <SearchMetrics onSelectMetric={onSelectMetric} metricState={metricState} subscriptionState={subscriptionState} onClickSearch={onClickSearchMetrics} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
         { navState.tabIndex === 1 ? <MySubscriptions onSelectMetric={onSelectMetric} subscriptionState={subscriptionState} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
-        { navState.tabIndex === 2 ? <MyAlerts metricAlerts={mockData.fakeAlertHistory} onViewChart={onSelectMetric} /> : null }
+        { navState.tabIndex === 2 ? <MyAlerts metricAlertState={metricAlertState} onViewChart={onSelectMetric} onClickRefresh={onRefreshMetricAlerts} /> : null }
       </Box>
       <SelectedMetricDialog onClose={onCloseSelectedMetric} selectedMetricState={selectedMetricState} onRefreshMetricDataPoints={onRefreshMetricDataPoints} />
       <AppSnackBar appSnackBarState={appSnackBarState} />

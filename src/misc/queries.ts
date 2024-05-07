@@ -71,7 +71,7 @@ const getMetricDataPoints = async (apiKey: string, metricKey: string) => {
 
 const getAlertHistory = async (apiKey: string, userId: string) => {
   await utils.sleep(2_000);
-  return mockData.fakeAlertHistory;
+  return [...mockData.fakeAlertHistory];
 };
 
 const QUERIES = {
