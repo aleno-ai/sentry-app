@@ -1,3 +1,4 @@
+import mockData from './mockData';
 import { Metric, Subscription } from './types';
 import utils from './utils';
 
@@ -8,22 +9,24 @@ const login = async (apiKey: string) => {
 
 const getSubscriptions = async (apiKey: string): Promise<Subscription[]> => {
   await utils.sleep(2_000);
-  return [];
+  const shuffled = [...mockData.subscriptions].sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 4);
+  return selected;
 };
 
 const searchMetricsByPoolAddresses = async (apiKey: string, addresses: string): Promise<Metric[]> => {
   await utils.sleep(2_000);
-  return [];
+  return [...mockData.metrics];
 };
 
 const searchMetricsByTokenAddresses = async (apiKey: string, addresses: string): Promise<Metric[]> => {
   await utils.sleep(2_000);
-  return [];
+  return [...mockData.metrics];
 };
 
 const searchMetricsByUserAddresses = async (apiKey: string, addresses: string): Promise<Metric[]> => {
   await utils.sleep(2_000);
-  return [];
+  return [...mockData.metrics];
 };
 
 const QUERIES = {
