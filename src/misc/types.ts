@@ -1,3 +1,18 @@
+type Account = {
+    id: string
+    accountName: string
+    webhookUrl: string | null
+    apiKeyHash: string
+    apiKeyExpirationTimestamp: number
+}
+
+type User = {
+    id: string
+    accountId: string
+    userName: string | null
+    userContext: string | null
+}
+
 type Subscription = {
     id: string;
     userId: string;
@@ -15,9 +30,8 @@ type Metric = {
 };
 
 type LoginState = {
-    apiKey: string,
-    connected: boolean,
     isLoading: boolean
+    authData: { account: Account, user: User } | null
 }
 
 type NavState = {
@@ -52,6 +66,8 @@ type AppState = {
 }
 
 export type {
+  Account,
+  User,
   Subscription,
   Metric,
   LoginState,

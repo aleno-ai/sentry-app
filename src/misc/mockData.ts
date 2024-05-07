@@ -1,4 +1,19 @@
-import { Metric, Subscription } from './types';
+import { Account, Metric, Subscription, User } from './types';
+
+const account: Account = {
+  id: 'accountId',
+  accountName: 'account name',
+  apiKeyExpirationTimestamp: 1,
+  apiKeyHash: 'aaaa',
+  webhookUrl: 'fake webhook url',
+};
+
+const user: User = {
+  accountId: account.id,
+  id: 'userId',
+  userContext: '',
+  userName: 'ok',
+};
 
 const metrics: Metric[] = [
   {
@@ -319,4 +334,4 @@ const subscriptions: Subscription[] = [
   { id: 'fake id', metricKey: 'eth_token_total_tvl_0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', startWindowTimestamp: 0, threshold: 5, userId: 'fake_user_id' },
 ];
 
-export default { metrics, subscriptions };
+export default { account, user, metrics, subscriptions };

@@ -4,7 +4,7 @@ import utils from './utils';
 
 const login = async (apiKey: string) => {
   await utils.sleep(2_000);
-  return true;
+  return { account: mockData.account, user: mockData.user };
 };
 
 const getSubscriptions = async (apiKey: string): Promise<Subscription[]> => {
