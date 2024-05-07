@@ -29,6 +29,27 @@ type Metric = {
     info: any
 };
 
+type MetricAlert = {
+    id: string
+    chainId: string
+    accountId: string
+    userId: string
+    userContext: string | null
+    message: string
+    sendTimestamp: number
+    sendWebhookUrl: string
+    subscriptionId: string
+    subscriptionThreshold: number
+    metric: Metric
+    block: { number: number, timestamp: number }
+    fromPoint: { timestamp: number, value: number }
+    toPoint: { timestamp: number, value: number }
+    metricDelta: number
+    metricPercentVariation: number
+    createdAt: string
+    updatedAt: string
+};
+
 type LoginState = {
     isLoading: boolean
     authData: { account: Account, user: User } | null
@@ -80,4 +101,5 @@ export type {
   SelectedMetricState,
   AppState,
   AppSnackBarState,
+  MetricAlert,
 };

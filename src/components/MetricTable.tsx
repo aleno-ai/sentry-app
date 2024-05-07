@@ -85,7 +85,7 @@ function MetricLine(props: { onSelectMetric: (metric: Metric) => void, isLoading
 
 function EntityLine(props: { onSelectMetric: (metric: Metric) => void, isLoading: boolean, entityRow: EntityRow, onUpdateThreshold: (data: { metricKey: string, threshold: number }) => void }) {
   return (
-    <Accordion>
+    <Accordion elevation={3}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="panel1-content"
