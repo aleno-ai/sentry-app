@@ -69,6 +69,11 @@ const getMetricDataPoints = async (apiKey: string, metricKey: string) => {
   return dataPoints;
 };
 
+const getAlertHistory = async (apiKey: string, userId: string) => {
+  await utils.sleep(2_000);
+  return mockData.fakeAlertHistory;
+};
+
 const QUERIES = {
   login,
   getSubscriptions,
@@ -77,6 +82,7 @@ const QUERIES = {
   searchMetricsByTokenAddresses,
   searchMetricsByUserAddresses,
   getMetricDataPoints,
+  getAlertHistory,
 };
 
 export default QUERIES;

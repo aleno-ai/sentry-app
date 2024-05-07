@@ -12,11 +12,12 @@ import mockData from './misc/mockData';
 import SelectedMetricDialog from './components/SelectedMetricDialog';
 
 const initialAppState: AppState = {
-  loginState: { isLoading: false, authData: { account: mockData.account, user: mockData.user } },
+  loginState: { isLoading: false, authData: null },
   navState: { tabIndex: 0 },
-  subscriptionState: { subscriptions: mockData.subscriptions, associatedMetrics: mockData.associatedMetrics, isLoading: false },
+  subscriptionState: { subscriptions: [], associatedMetrics: [], isLoading: false },
   metricState: { metrics: mockData.metrics, isLoading: false },
   selectedMetricState: { metric: null, isLoading: false, dataPoints: [] },
+  metricAlertState: { metricAlerts: [], isLoading: false },
   appSnackBarState: { message: null },
 };
 
@@ -26,16 +27,28 @@ function App() {
   const [subscriptionState, setSubscriptionState] = useState(initialAppState.subscriptionState);
   const [metricState, setMetricState] = useState(initialAppState.metricState);
   const [selectedMetricState, setSelectedMetricState] = useState(initialAppState.selectedMetricState);
+  const [metricAlertState, setMetricAlertState] = useState(initialAppState.metricAlertState);
   const [appSnackBarState, setAppSnackBarState] = useState(initialAppState.appSnackBarState);
   const { authData } = loginState;
 
   const onClickLogin = async (providedApiKey: string) => {
     setLoginState({ ...loginState, isLoading: true });
+    setSubscriptionState({ ...subscriptionState, isLoading: true });
+    setMetricAlertState({ ...metricAlertState, isLoading: true });
+
     setAppSnackBarState({ ...appSnackBarState, message: 'Connecting to Sentry...' });
     const authDataResult = await QUERIES.login(providedApiKey);
+
+    setAppSnackBarState({ ...appSnackBarState, message: 'Fetching subscriptions...' });
     const { subscriptions, associatedMetrics } = authDataResult ? (await QUERIES.getSubscriptions(providedApiKey)) : { subscriptions: [], associatedMetrics: [] };
-    setLoginState({ ...loginState, authData: authDataResult, isLoading: false });
+
+    setAppSnackBarState({ ...appSnackBarState, message: 'Fetching alert history...' });
+    const alertHistory = await QUERIES.getAlertHistory(providedApiKey, authDataResult.user.id);
+
     setSubscriptionState({ ...subscriptionState, subscriptions, associatedMetrics, isLoading: false });
+    setMetricAlertState({ ...metricAlertState, isLoading: false });
+    setLoginState({ ...loginState, authData: authDataResult, isLoading: false });
+
     setAppSnackBarState({ ...appSnackBarState, message: null });
   };
 

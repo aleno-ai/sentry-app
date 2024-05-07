@@ -80,6 +80,11 @@ type AppSnackBarState = {
     message: string | null
 }
 
+type MetricAlertState = {
+    metricAlerts: MetricAlert[],
+    isLoading: boolean
+}
+
 type AppState = {
     loginState: LoginState
     navState: NavState
@@ -87,6 +92,7 @@ type AppState = {
     metricState: MetricState
     selectedMetricState: SelectedMetricState
     appSnackBarState: AppSnackBarState
+    metricAlertState: MetricAlertState
 }
 
 export type {
@@ -102,4 +108,5 @@ export type {
   AppState,
   AppSnackBarState,
   MetricAlert,
+  MetricAlertState,
 };
