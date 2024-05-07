@@ -1,5 +1,5 @@
 import { Button, Grid, TextField, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -55,6 +55,9 @@ const getMetricShortName = (metric: Metric) => {
 function MetricLine(props: { isLoading: boolean, metricWithThreshold: { metric: Metric, threshold: number }, onThresholdUpdate: (data: { metricKey: string, threshold: number }) => void }) {
   const metricShortName = getMetricShortName(props.metricWithThreshold.metric);
   const [inputValue, setInputValue] = useState(props.metricWithThreshold.threshold);
+  useEffect(() => {
+    setInputValue(props.metricWithThreshold.threshold);
+  }, [props.metricWithThreshold]);
   const onChange = (s: string) => {
     const newValue = parseFloat(s);
     if (newValue || (newValue === 0)) {
@@ -104,21 +107,40 @@ function EntityLine(props: { isLoading: boolean, entityRow: EntityRow, onUpdateT
         </Grid>
       </AccordionSummary>
       <AccordionDetails>
-        {props.entityRow.metricWithThresholds.map((metricWithThreshold) => (<MetricLine isLoading={props.isLoading} onThresholdUpdate={props.onUpdateThreshold} metricWithThreshold={metricWithThreshold} />))}
+        {props.entityRow.metricWithThresholds.map((metricWithThreshold) => (<MetricLine key={metricWithThreshold.metric.key} isLoading={props.isLoading} onThresholdUpdate={props.onUpdateThreshold} metricWithThreshold={metricWithThreshold} />))}
       </AccordionDetails>
     </Accordion>
   );
 }
 
-function MetricTable(props: { isLoading: boolean, metricWithThresholds: { metric: Metric, threshold: number }[] }) {
-  const entityRows = groupByEntity(props.metricWithThresholds);
+function MetricTable(props: {
+  isLoading: boolean,
+  metricWithThresholds: { metric: Metric, threshold: number }[],
+  onClickUpdateSubscriptions: (updateSubscriptionData: { metricKey: string, threshold: number }[]) => Promise<void>
+}) {
+  let entityRows = groupByEntity(props.metricWithThresholds);
 
   const [thresholdUpdateMap, setThresholdUpdateMap] = useState<Map<string, number>>(new Map());
+
+  useEffect(() => {
+    setThresholdUpdateMap(new Map());
+    entityRows = groupByEntity(props.metricWithThresholds);
+  }, [props.metricWithThresholds]);
 
   const onUpdateThreshold = (data: { metricKey: string, threshold: number }) => {
     const newMap = new Map(thresholdUpdateMap.entries());
     newMap.set(data.metricKey, data.threshold);
     setThresholdUpdateMap(newMap);
+  };
+
+  const onClickUpdate = () => {
+    const updateSubscriptionData: { metricKey: string, threshold: number }[] = [];
+    const metricKeys = Array.from(thresholdUpdateMap.keys());
+    metricKeys.forEach((metricKey) => {
+      const threshold = thresholdUpdateMap.get(metricKey)!;
+      updateSubscriptionData.push({ metricKey, threshold });
+    });
+    props.onClickUpdateSubscriptions(updateSubscriptionData);
   };
 
   return (
@@ -128,11 +150,11 @@ function MetricTable(props: { isLoading: boolean, metricWithThresholds: { metric
           <Typography variant="h5">Metric Table: {props.metricWithThresholds.length} metrics on {entityRows.length} entities</Typography>
         </Grid>
         <Grid item xs={2}>
-          <Button fullWidth variant="outlined" disabled={props.isLoading}>Update {thresholdUpdateMap.size} subscriptions</Button>
+          <Button fullWidth variant="outlined" disabled={props.isLoading} onClick={onClickUpdate}>Update {thresholdUpdateMap.size} subscriptions</Button>
         </Grid>
       </Grid>
       <div style={{ marginTop: '1rem' }}>
-        {entityRows.map((entityRow) => (<EntityLine isLoading={props.isLoading} entityRow={entityRow} onUpdateThreshold={onUpdateThreshold} />))}
+        {entityRows.map((entityRow) => (<EntityLine key={entityRow.rowKey} isLoading={props.isLoading} entityRow={entityRow} onUpdateThreshold={onUpdateThreshold} />))}
       </div>
     </div>
   );

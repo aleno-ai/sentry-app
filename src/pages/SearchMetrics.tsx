@@ -4,11 +4,15 @@ import { MetricState, SubscriptionState } from '../misc/types';
 import utils from '../misc/utils';
 import MetricTable from '../components/MetricTable';
 
-function SearchMetrics(props: { metricState: MetricState, subscriptionState: SubscriptionState, onClickSearch: (searchMode: string, textInput: string) => Promise<void> }) {
+function SearchMetrics(props: {
+  metricState: MetricState,
+  subscriptionState: SubscriptionState,
+  onClickSearch: (searchMode: string, textInput: string) => Promise<void>,
+  onClickUpdateSubscriptions: (updateSubscriptionData: { metricKey: string, threshold: number }[]) => Promise<void>
+}) {
   const [searchMode, setSearchMode] = useState('USER_ADDRESSES');
   const [textInput, setTextInput] = useState('');
   const isLoading = props.metricState.isLoading || props.subscriptionState.isLoading;
-  useEffect(() => {}, [props.metricState, props.subscriptionState]);
   const metricWithThresholds = utils.getMetricsWithThresholds(props.metricState.metrics, props.subscriptionState.subscriptions);
 
   return (
@@ -39,7 +43,7 @@ function SearchMetrics(props: { metricState: MetricState, subscriptionState: Sub
           <Button variant="contained" style={{ height: '56px' }} fullWidth onClick={() => props.onClickSearch(searchMode, textInput)} disabled={isLoading}>Search metrics</Button>
         </Grid>
       </Grid>
-      <MetricTable metricWithThresholds={metricWithThresholds} isLoading={props.metricState.isLoading || props.subscriptionState.isLoading} />
+      <MetricTable metricWithThresholds={metricWithThresholds} isLoading={props.metricState.isLoading || props.subscriptionState.isLoading} onClickUpdateSubscriptions={props.onClickUpdateSubscriptions} />
     </>
   );
 }

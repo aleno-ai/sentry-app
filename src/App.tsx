@@ -11,15 +11,13 @@ import MyAlerts from './pages/MyAlerts';
 import mockData from './misc/mockData';
 
 const initialAppState: AppState = {
-  loginState: { isLoading: false, authData: null },
+  loginState: { isLoading: false, authData: { account: mockData.account, user: mockData.user } },
   navState: { tabIndex: 0 },
   subscriptionState: { subscriptions: mockData.subscriptions, isLoading: false },
   metricState: { metrics: mockData.metrics, isLoading: false },
   selectedMetricState: { metric: null },
   appSnackBarState: { message: null },
 };
-
-console.log(initialAppState);
 
 function App() {
   const [loginState, setLoginState] = useState(initialAppState.loginState);
@@ -52,15 +50,19 @@ function App() {
     setAppSnackBarState({ ...appSnackBarState, message: null });
   };
 
-  const onClickUpdateSubscriptions = (updateSubscriptionData: { metricKey: string, threshold: string }) => {
-
+  const onClickUpdateSubscriptions = async (updateSubscriptionData: { metricKey: string, threshold: number }[]) => {
+    setSubscriptionState({ ...subscriptionState, isLoading: true });
+    setAppSnackBarState({ ...appSnackBarState, message: `Updating ${updateSubscriptionData.length} subscriptions...` });
+    const response = await QUERIES.updateSUbscriptions(authData.account.apiKeyHash, authData.user.id, updateSubscriptionData);
+    setSubscriptionState({ ...subscriptionState, isLoading: false, subscriptions: response.currentUserSubscriptions });
+    setAppSnackBarState({ ...appSnackBarState, message: null });
   };
 
   return (
     <div>
       <AppMenu navState={navState} onClickTab={(tabIndex) => setNavState({ ...navState, tabIndex })} />
       <Box sx={{ p: 3 }}>
-        { navState.tabIndex === 0 ? <SearchMetrics metricState={metricState} subscriptionState={subscriptionState} onClickSearch={onClickSearchMetrics} /> : null }
+        { navState.tabIndex === 0 ? <SearchMetrics metricState={metricState} subscriptionState={subscriptionState} onClickSearch={onClickSearchMetrics} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
         { navState.tabIndex === 1 ? <MySubscriptions /> : null }
         { navState.tabIndex === 2 ? <MyAlerts /> : null }
         <AppSnackBar appSnackBarState={appSnackBarState} />

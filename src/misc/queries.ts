@@ -29,9 +29,29 @@ const searchMetricsByUserAddresses = async (apiKey: string, addresses: string): 
   return [...mockData.metrics];
 };
 
+const updateSUbscriptions = async (apiKey: string, userId: string, subscriptionUpdateData: { metricKey: string, threshold: number }[]) => {
+  await utils.sleep(2_000);
+  const shuffled = [...mockData.metrics].sort(() => 0.5 - Math.random());
+  const selectedMetrics = shuffled.slice(0, 4);
+  const currentUserSubscriptions: Subscription[] = selectedMetrics.map((m, index) => ({
+    id: `${m.key}_${index}`,
+    metricKey: m.key,
+    startWindowTimestamp: 0,
+    threshold: Math.floor(Math.random() * 10),
+    userId,
+  }));
+  return {
+    inserted: [],
+    updated: [],
+    deleted: [],
+    currentUserSubscriptions,
+  };
+};
+
 const QUERIES = {
   login,
   getSubscriptions,
+  updateSUbscriptions,
   searchMetricsByPoolAddresses,
   searchMetricsByTokenAddresses,
   searchMetricsByUserAddresses,
