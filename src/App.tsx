@@ -13,7 +13,7 @@ import mockData from './misc/mockData';
 const initialAppState: AppState = {
   loginState: { isLoading: false, authData: { account: mockData.account, user: mockData.user } },
   navState: { tabIndex: 0 },
-  subscriptionState: { subscriptions: mockData.subscriptions, isLoading: false },
+  subscriptionState: { subscriptions: mockData.subscriptions, associatedMetrics: mockData.associatedMetrics, isLoading: false },
   metricState: { metrics: mockData.metrics, isLoading: false },
   selectedMetricState: { metric: null },
   appSnackBarState: { message: null },
@@ -32,9 +32,9 @@ function App() {
     setLoginState({ ...loginState, isLoading: true });
     setAppSnackBarState({ ...appSnackBarState, message: 'Connecting to Sentry...' });
     const authDataResult = await QUERIES.login(providedApiKey);
-    const subscriptions = authDataResult ? (await QUERIES.getSubscriptions(providedApiKey)) : [];
+    const { subscriptions, associatedMetrics } = authDataResult ? (await QUERIES.getSubscriptions(providedApiKey)) : { subscriptions: [], associatedMetrics: [] };
     setLoginState({ ...loginState, authData: authDataResult, isLoading: false });
-    setSubscriptionState({ ...subscriptionState, subscriptions, isLoading: false });
+    setSubscriptionState({ ...subscriptionState, subscriptions, associatedMetrics, isLoading: false });
     setAppSnackBarState({ ...appSnackBarState, message: null });
   };
 
@@ -54,7 +54,7 @@ function App() {
     setSubscriptionState({ ...subscriptionState, isLoading: true });
     setAppSnackBarState({ ...appSnackBarState, message: `Updating ${updateSubscriptionData.length} subscriptions...` });
     const response = await QUERIES.updateSUbscriptions(authData.account.apiKeyHash, authData.user.id, updateSubscriptionData);
-    setSubscriptionState({ ...subscriptionState, isLoading: false, subscriptions: response.currentUserSubscriptions });
+    setSubscriptionState({ ...subscriptionState, isLoading: false, subscriptions: response.currentUserSubscriptions, associatedMetrics: response.associatedMetrics });
     setAppSnackBarState({ ...appSnackBarState, message: null });
   };
 
@@ -63,7 +63,7 @@ function App() {
       <AppMenu navState={navState} onClickTab={(tabIndex) => setNavState({ ...navState, tabIndex })} />
       <Box sx={{ p: 3 }}>
         { navState.tabIndex === 0 ? <SearchMetrics metricState={metricState} subscriptionState={subscriptionState} onClickSearch={onClickSearchMetrics} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
-        { navState.tabIndex === 1 ? <MySubscriptions /> : null }
+        { navState.tabIndex === 1 ? <MySubscriptions subscriptionState={subscriptionState} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
         { navState.tabIndex === 2 ? <MyAlerts /> : null }
         <AppSnackBar appSnackBarState={appSnackBarState} />
       </Box>

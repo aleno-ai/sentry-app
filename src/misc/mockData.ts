@@ -334,4 +334,21 @@ const subscriptions: Subscription[] = [
   { id: 'fake id', metricKey: 'eth_token_total_tvl_0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', startWindowTimestamp: 0, threshold: 5, userId: 'fake_user_id' },
 ];
 
-export default { account, user, metrics, subscriptions };
+const associatedMetrics: Metric[] = [{
+  key: 'eth_token_total_tvl_0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+  chainId: 'eth',
+  type: 'token_total_tvl',
+  name: 'WETH total tvl',
+  info: {
+    token: {
+      address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+      chainId: 'eth',
+      name: 'Wrapped Ether',
+      symbol: 'WETH',
+      decimals: 18,
+      isTracked: true,
+    },
+  },
+}];
+
+export default { account, user, metrics, subscriptions, associatedMetrics };

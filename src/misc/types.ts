@@ -40,6 +40,7 @@ type NavState = {
 
 type SubscriptionState = {
     subscriptions: Subscription[],
+    associatedMetrics: Metric[],
     isLoading: boolean
 }
 

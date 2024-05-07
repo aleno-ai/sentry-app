@@ -7,11 +7,19 @@ const login = async (apiKey: string) => {
   return { account: mockData.account, user: mockData.user };
 };
 
-const getSubscriptions = async (apiKey: string): Promise<Subscription[]> => {
+const getSubscriptions = async (apiKey: string): Promise<{ subscriptions: Subscription[], associatedMetrics: Metric[] }> => {
   await utils.sleep(2_000);
-  const shuffled = [...mockData.subscriptions].sort(() => 0.5 - Math.random());
-  const selected = shuffled.slice(0, 4);
-  return selected;
+  const shuffled = [...mockData.metrics].sort(() => 0.5 - Math.random());
+  const selectedMetrics = shuffled.slice(0, 4);
+  const subscriptions: Subscription[] = selectedMetrics.map((metric, index) => ({
+    id: `${metric.key}_${index}`,
+    metricKey: metric.key,
+    startWindowTimestamp: 0,
+    threshold: Math.floor(Math.random() * 10),
+    userId: mockData.user.id,
+  }));
+
+  return { subscriptions, associatedMetrics: selectedMetrics };
 };
 
 const searchMetricsByPoolAddresses = async (apiKey: string, addresses: string): Promise<Metric[]> => {
@@ -45,6 +53,7 @@ const updateSUbscriptions = async (apiKey: string, userId: string, subscriptionU
     updated: [],
     deleted: [],
     currentUserSubscriptions,
+    associatedMetrics: selectedMetrics,
   };
 };
 
