@@ -16,7 +16,7 @@ const initialAppState: AppState = {
   navState: { tabIndex: 0 },
   subscriptionState: { subscriptions: mockData.subscriptions, associatedMetrics: mockData.associatedMetrics, isLoading: false },
   metricState: { metrics: mockData.metrics, isLoading: false },
-  selectedMetricState: { metric: null },
+  selectedMetricState: { metric: null, isLoading: false, dataPoints: [] },
   appSnackBarState: { message: null },
 };
 
@@ -59,12 +59,26 @@ function App() {
     setAppSnackBarState({ ...appSnackBarState, message: null });
   };
 
-  const onSelectMetric = (metric: Metric) => {
-    setSelectedMetricState({ ...selectedMetricState, metric });
+  const onSelectMetric = async (metric: Metric) => {
+    setSelectedMetricState({ ...selectedMetricState, metric, isLoading: true });
+    setAppSnackBarState({ message: 'Loading data points' });
+    const dataPoints = await QUERIES.getMetricDataPoints(authData.account.apiKeyHash, metric.key);
+    setSelectedMetricState({ ...selectedMetricState, isLoading: false, dataPoints, metric });
+    setAppSnackBarState({ message: null });
   };
 
   const onCloseSelectedMetric = () => {
-    setSelectedMetricState({ ...selectedMetricState, metric: null });
+    setSelectedMetricState({ ...selectedMetricState, metric: null, dataPoints: [] });
+  };
+
+  const onRefreshMetricDataPoints = async () => {
+    const selectedMetric = selectedMetricState.metric;
+    if (!selectedMetric) return;
+    setSelectedMetricState({ ...selectedMetricState, dataPoints: [], isLoading: true });
+    setAppSnackBarState({ message: 'Loading data points' });
+    const dataPoints = await QUERIES.getMetricDataPoints(authData.account.apiKeyHash, selectedMetric.key);
+    setSelectedMetricState({ ...selectedMetricState, dataPoints, isLoading: false });
+    setAppSnackBarState({ message: null });
   };
 
   return (
@@ -74,9 +88,9 @@ function App() {
         { navState.tabIndex === 0 ? <SearchMetrics onSelectMetric={onSelectMetric} metricState={metricState} subscriptionState={subscriptionState} onClickSearch={onClickSearchMetrics} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
         { navState.tabIndex === 1 ? <MySubscriptions onSelectMetric={onSelectMetric} subscriptionState={subscriptionState} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
         { navState.tabIndex === 2 ? <MyAlerts /> : null }
-        <AppSnackBar appSnackBarState={appSnackBarState} />
       </Box>
-      <SelectedMetricDialog onClose={onCloseSelectedMetric} selectedMetricState={selectedMetricState} />
+      <SelectedMetricDialog onClose={onCloseSelectedMetric} selectedMetricState={selectedMetricState} onRefreshMetricDataPoints={onRefreshMetricDataPoints} />
+      <AppSnackBar appSnackBarState={appSnackBarState} />
     </div>
   );
 }

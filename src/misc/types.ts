@@ -51,6 +51,8 @@ type MetricState = {
 
 type SelectedMetricState = {
     metric: Metric | null
+    isLoading: boolean
+    dataPoints: { timestamp: number, value: number }[]
 }
 
 type AppSnackBarState = {

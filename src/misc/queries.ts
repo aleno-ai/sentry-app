@@ -57,6 +57,18 @@ const updateSUbscriptions = async (apiKey: string, userId: string, subscriptionU
   };
 };
 
+const getMetricDataPoints = async (apiKey: string, metricKey: string) => {
+  await utils.sleep(2_000);
+  const currentTimestamp = Math.floor(Date.now() / 1_000);
+  const dataPoints: { timestamp: number, value: number }[] = [];
+  for (let index = 0; index < 100; index += 1) {
+    const timestamp = currentTimestamp - (100 - index) * 12;
+    const value = 30 + (index / 10) + Math.floor(Math.random() * 5);
+    dataPoints.push({ timestamp, value });
+  }
+  return dataPoints;
+};
+
 const QUERIES = {
   login,
   getSubscriptions,
@@ -64,6 +76,7 @@ const QUERIES = {
   searchMetricsByPoolAddresses,
   searchMetricsByTokenAddresses,
   searchMetricsByUserAddresses,
+  getMetricDataPoints,
 };
 
 export default QUERIES;
