@@ -87,7 +87,7 @@ function App() {
       <Box sx={{ p: 3 }}>
         { navState.tabIndex === 0 ? <SearchMetrics onSelectMetric={onSelectMetric} metricState={metricState} subscriptionState={subscriptionState} onClickSearch={onClickSearchMetrics} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
         { navState.tabIndex === 1 ? <MySubscriptions onSelectMetric={onSelectMetric} subscriptionState={subscriptionState} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
-        { navState.tabIndex === 2 ? <MyAlerts metricAlerts={mockData.fakeAlertHistory} /> : null }
+        { navState.tabIndex === 2 ? <MyAlerts metricAlerts={mockData.fakeAlertHistory} onViewChart={onSelectMetric} /> : null }
       </Box>
       <SelectedMetricDialog onClose={onCloseSelectedMetric} selectedMetricState={selectedMetricState} onRefreshMetricDataPoints={onRefreshMetricDataPoints} />
       <AppSnackBar appSnackBarState={appSnackBarState} />
