@@ -1,5 +1,5 @@
 import { Button, Grid, TextField, Typography } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -52,8 +52,19 @@ const getMetricShortName = (metric: Metric) => {
   return 'unknown';
 };
 
-function MetricLine(props: { metricWithThreshold: { metric: Metric, threshold: number } }) {
+function MetricLine(props: { isLoading: boolean, metricWithThreshold: { metric: Metric, threshold: number }, onThresholdUpdate: (data: { metricKey: string, threshold: number }) => void }) {
   const metricShortName = getMetricShortName(props.metricWithThreshold.metric);
+  const [inputValue, setInputValue] = useState(props.metricWithThreshold.threshold);
+  const onChange = (s: string) => {
+    const newValue = parseFloat(s);
+    if (newValue || (newValue === 0)) {
+      setInputValue(newValue);
+      props.onThresholdUpdate({ metricKey: props.metricWithThreshold.metric.key, threshold: newValue });
+    } else {
+      setInputValue(0);
+      props.onThresholdUpdate({ metricKey: props.metricWithThreshold.metric.key, threshold: 0 });
+    }
+  };
   return (
     <Grid container alignItems="center" style={{ marginTop: '1rem' }}>
       <Grid item xs={4}>
@@ -63,13 +74,13 @@ function MetricLine(props: { metricWithThreshold: { metric: Metric, threshold: n
         <Button variant="outlined" size="small">View chart</Button>
       </Grid>
       <Grid item xs={4}>
-        <TextField size="small" label="alert threshold (%)" value="0" />
+        <TextField disabled={props.isLoading} size="small" label="alert threshold (%)" onChange={(e) => onChange(e.target.value)} value={inputValue} />
       </Grid>
     </Grid>
   );
 }
 
-function EntityLine(props: { entityRow: EntityRow }) {
+function EntityLine(props: { isLoading: boolean, entityRow: EntityRow, onUpdateThreshold: (data: { metricKey: string, threshold: number }) => void }) {
   return (
     <Accordion>
       <AccordionSummary
@@ -93,14 +104,23 @@ function EntityLine(props: { entityRow: EntityRow }) {
         </Grid>
       </AccordionSummary>
       <AccordionDetails>
-        {props.entityRow.metricWithThresholds.map((metricWithThreshold) => (<MetricLine metricWithThreshold={metricWithThreshold} />))}
+        {props.entityRow.metricWithThresholds.map((metricWithThreshold) => (<MetricLine isLoading={props.isLoading} onThresholdUpdate={props.onUpdateThreshold} metricWithThreshold={metricWithThreshold} />))}
       </AccordionDetails>
     </Accordion>
   );
 }
 
-function MetricTable(props: { metricWithThresholds: { metric: Metric, threshold: number }[] }) {
+function MetricTable(props: { isLoading: boolean, metricWithThresholds: { metric: Metric, threshold: number }[] }) {
   const entityRows = groupByEntity(props.metricWithThresholds);
+
+  const [thresholdUpdateMap, setThresholdUpdateMap] = useState<Map<string, number>>(new Map());
+
+  const onUpdateThreshold = (data: { metricKey: string, threshold: number }) => {
+    const newMap = new Map(thresholdUpdateMap.entries());
+    newMap.set(data.metricKey, data.threshold);
+    setThresholdUpdateMap(newMap);
+  };
+
   return (
     <div style={{ marginTop: '3rem' }}>
       <Grid container justifyContent="space-between" spacing={2}>
@@ -108,11 +128,11 @@ function MetricTable(props: { metricWithThresholds: { metric: Metric, threshold:
           <Typography variant="h5">Metric Table: {props.metricWithThresholds.length} metrics on {entityRows.length} entities</Typography>
         </Grid>
         <Grid item xs={2}>
-          <Button fullWidth variant="outlined">Update 0 subscriptions</Button>
+          <Button fullWidth variant="outlined" disabled={props.isLoading}>Update {thresholdUpdateMap.size} subscriptions</Button>
         </Grid>
       </Grid>
       <div style={{ marginTop: '1rem' }}>
-        {entityRows.map((entityRow) => (<EntityLine entityRow={entityRow} />))}
+        {entityRows.map((entityRow) => (<EntityLine isLoading={props.isLoading} entityRow={entityRow} onUpdateThreshold={onUpdateThreshold} />))}
       </div>
     </div>
   );
