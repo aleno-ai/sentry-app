@@ -3,12 +3,13 @@ import { Box } from '@mui/material';
 import SearchMetrics from './pages/SearchMetrics';
 import MySubscriptions from './pages/MySubscriptions';
 import LoginPage from './components/LoginPage';
-import { AppState } from './misc/types';
+import { AppState, Metric } from './misc/types';
 import QUERIES from './misc/queries';
 import AppSnackBar from './components/AppSnackBar';
 import AppMenu from './components/AppMenu';
 import MyAlerts from './pages/MyAlerts';
 import mockData from './misc/mockData';
+import SelectedMetricDialog from './components/SelectedMetricDialog';
 
 const initialAppState: AppState = {
   loginState: { isLoading: false, authData: { account: mockData.account, user: mockData.user } },
@@ -58,15 +59,24 @@ function App() {
     setAppSnackBarState({ ...appSnackBarState, message: null });
   };
 
+  const onSelectMetric = (metric: Metric) => {
+    setSelectedMetricState({ ...selectedMetricState, metric });
+  };
+
+  const onCloseSelectedMetric = () => {
+    setSelectedMetricState({ ...selectedMetricState, metric: null });
+  };
+
   return (
     <div>
       <AppMenu navState={navState} onClickTab={(tabIndex) => setNavState({ ...navState, tabIndex })} />
       <Box sx={{ p: 3 }}>
-        { navState.tabIndex === 0 ? <SearchMetrics metricState={metricState} subscriptionState={subscriptionState} onClickSearch={onClickSearchMetrics} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
-        { navState.tabIndex === 1 ? <MySubscriptions subscriptionState={subscriptionState} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
+        { navState.tabIndex === 0 ? <SearchMetrics onSelectMetric={onSelectMetric} metricState={metricState} subscriptionState={subscriptionState} onClickSearch={onClickSearchMetrics} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
+        { navState.tabIndex === 1 ? <MySubscriptions onSelectMetric={onSelectMetric} subscriptionState={subscriptionState} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
         { navState.tabIndex === 2 ? <MyAlerts /> : null }
         <AppSnackBar appSnackBarState={appSnackBarState} />
       </Box>
+      <SelectedMetricDialog onClose={onCloseSelectedMetric} selectedMetricState={selectedMetricState} />
     </div>
   );
 }

@@ -52,7 +52,7 @@ const getMetricShortName = (metric: Metric) => {
   return 'unknown';
 };
 
-function MetricLine(props: { isLoading: boolean, metricWithThreshold: { metric: Metric, threshold: number }, onThresholdUpdate: (data: { metricKey: string, threshold: number }) => void }) {
+function MetricLine(props: { onSelectMetric: (metric: Metric) => void, isLoading: boolean, metricWithThreshold: { metric: Metric, threshold: number }, onThresholdUpdate: (data: { metricKey: string, threshold: number }) => void }) {
   const metricShortName = getMetricShortName(props.metricWithThreshold.metric);
   const [inputValue, setInputValue] = useState(props.metricWithThreshold.threshold);
   useEffect(() => {
@@ -74,7 +74,7 @@ function MetricLine(props: { isLoading: boolean, metricWithThreshold: { metric: 
         <Button>{metricShortName}</Button>
       </Grid>
       <Grid item xs={2}>
-        <Button variant="outlined" size="small">View chart</Button>
+        <Button variant="outlined" size="small" onClick={() => props.onSelectMetric(props.metricWithThreshold.metric)}>View chart</Button>
       </Grid>
       <Grid item xs={4}>
         <TextField disabled={props.isLoading} size="small" label="alert threshold (%)" onChange={(e) => onChange(e.target.value)} value={inputValue} />
@@ -83,7 +83,7 @@ function MetricLine(props: { isLoading: boolean, metricWithThreshold: { metric: 
   );
 }
 
-function EntityLine(props: { isLoading: boolean, entityRow: EntityRow, onUpdateThreshold: (data: { metricKey: string, threshold: number }) => void }) {
+function EntityLine(props: { onSelectMetric: (metric: Metric) => void, isLoading: boolean, entityRow: EntityRow, onUpdateThreshold: (data: { metricKey: string, threshold: number }) => void }) {
   return (
     <Accordion>
       <AccordionSummary
@@ -107,7 +107,7 @@ function EntityLine(props: { isLoading: boolean, entityRow: EntityRow, onUpdateT
         </Grid>
       </AccordionSummary>
       <AccordionDetails>
-        {props.entityRow.metricWithThresholds.map((metricWithThreshold) => (<MetricLine key={metricWithThreshold.metric.key} isLoading={props.isLoading} onThresholdUpdate={props.onUpdateThreshold} metricWithThreshold={metricWithThreshold} />))}
+        {props.entityRow.metricWithThresholds.map((metricWithThreshold) => (<MetricLine key={metricWithThreshold.metric.key} onSelectMetric={props.onSelectMetric} isLoading={props.isLoading} onThresholdUpdate={props.onUpdateThreshold} metricWithThreshold={metricWithThreshold} />))}
       </AccordionDetails>
     </Accordion>
   );
@@ -116,7 +116,8 @@ function EntityLine(props: { isLoading: boolean, entityRow: EntityRow, onUpdateT
 function MetricTable(props: {
   isLoading: boolean,
   metricWithThresholds: { metric: Metric, threshold: number }[],
-  onClickUpdateSubscriptions: (updateSubscriptionData: { metricKey: string, threshold: number }[]) => Promise<void>
+  onClickUpdateSubscriptions: (updateSubscriptionData: { metricKey: string, threshold: number }[]) => Promise<void>,
+  onSelectMetric: (metric: Metric) => void
 }) {
   let entityRows = groupByEntity(props.metricWithThresholds);
 
@@ -154,7 +155,7 @@ function MetricTable(props: {
         </Grid>
       </Grid>
       <div style={{ marginTop: '1rem' }}>
-        {entityRows.map((entityRow) => (<EntityLine key={entityRow.rowKey} isLoading={props.isLoading} entityRow={entityRow} onUpdateThreshold={onUpdateThreshold} />))}
+        {entityRows.map((entityRow) => (<EntityLine key={entityRow.rowKey} onSelectMetric={props.onSelectMetric} isLoading={props.isLoading} entityRow={entityRow} onUpdateThreshold={onUpdateThreshold} />))}
       </div>
     </div>
   );

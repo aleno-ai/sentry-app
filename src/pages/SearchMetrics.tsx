@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Grid, FormControl, MenuItem, Select, InputLabel, TextField, Button } from '@mui/material';
-import { MetricState, SubscriptionState } from '../misc/types';
+import { Metric, MetricState, SubscriptionState } from '../misc/types';
 import utils from '../misc/utils';
 import MetricTable from '../components/MetricTable';
 
 function SearchMetrics(props: {
   metricState: MetricState,
+  onSelectMetric: (metric: Metric) => void,
   subscriptionState: SubscriptionState,
   onClickSearch: (searchMode: string, textInput: string) => Promise<void>,
   onClickUpdateSubscriptions: (updateSubscriptionData: { metricKey: string, threshold: number }[]) => Promise<void>
@@ -43,7 +44,7 @@ function SearchMetrics(props: {
           <Button variant="contained" style={{ height: '56px' }} fullWidth onClick={() => props.onClickSearch(searchMode, textInput)} disabled={isLoading}>Search metrics</Button>
         </Grid>
       </Grid>
-      <MetricTable metricWithThresholds={metricWithThresholds} isLoading={props.metricState.isLoading || props.subscriptionState.isLoading} onClickUpdateSubscriptions={props.onClickUpdateSubscriptions} />
+      <MetricTable onSelectMetric={props.onSelectMetric} metricWithThresholds={metricWithThresholds} isLoading={props.metricState.isLoading || props.subscriptionState.isLoading} onClickUpdateSubscriptions={props.onClickUpdateSubscriptions} />
     </>
   );
 }
