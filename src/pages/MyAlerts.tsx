@@ -95,9 +95,9 @@ function MetricAlertLine(props: { metricAlert: MetricAlert, onViewChart: (metric
 function MyAlerts(props: { metricAlerts: MetricAlert[], onViewChart: (metric: Metric) => Promise<void> }) {
   return (
     <>
-      <Typography variant="h4" gutterBottom>Alert history</Typography>
+      <Typography variant="h4" gutterBottom style={{ marginBottom: '2.5rem' }}>Alert history</Typography>
       { props.metricAlerts.length === 0 ? <Typography>No alert to be displayed</Typography> : null }
-      {props.metricAlerts.map((metricAlert) => (<MetricAlertLine onViewChart={props.onViewChart} metricAlert={metricAlert} />))}
+      {props.metricAlerts.map((metricAlert) => (<MetricAlertLine key={metricAlert.id} onViewChart={props.onViewChart} metricAlert={metricAlert} />))}
     </>
   );
 }
