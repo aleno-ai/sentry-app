@@ -52,6 +52,7 @@ type MetricAlert = {
 
 type LoginState = {
     isLoading: boolean
+    apiKey: string
     authData: { account: Account, user: User } | null
 }
 

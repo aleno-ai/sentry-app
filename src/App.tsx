@@ -8,11 +8,10 @@ import QUERIES from './misc/queries';
 import AppSnackBar from './components/AppSnackBar';
 import AppMenu from './components/AppMenu';
 import MyAlerts from './pages/MyAlerts';
-import mockData from './misc/mockData';
 import SelectedMetricDialog from './components/SelectedMetricDialog';
 
 const initialAppState: AppState = {
-  loginState: { isLoading: false, authData: null },
+  loginState: { isLoading: false, authData: null, apiKey: '' },
   navState: { tabIndex: 0 },
   subscriptionState: { subscriptions: [], associatedMetrics: [], isLoading: false },
   metricState: { metrics: [], isLoading: false },
@@ -47,7 +46,7 @@ function App() {
 
     setSubscriptionState({ ...subscriptionState, subscriptions, associatedMetrics, isLoading: false });
     setMetricAlertState({ ...metricAlertState, metricAlerts, isLoading: false });
-    setLoginState({ ...loginState, authData: authDataResult, isLoading: false });
+    setLoginState({ ...loginState, authData: authDataResult, apiKey: providedApiKey, isLoading: false });
 
     setAppSnackBarState({ ...appSnackBarState, message: null });
   };
@@ -59,7 +58,7 @@ function App() {
     setAppSnackBarState({ ...appSnackBarState, message: 'Searching metrics...' });
     const toUseFunction = { TOKEN_ADDRESSES: QUERIES.searchMetricsByTokenAddresses, POOL_ADDRESSES: QUERIES.searchMetricsByPoolAddresses, USER_ADDRESSES: QUERIES.searchMetricsByUserAddresses }[searchMode];
     if (!toUseFunction) throw new Error('Invalid search mode provided');
-    const metrics = await toUseFunction(authData.account.apiKeyHash, textInput);
+    const metrics = await toUseFunction(loginState.apiKey, textInput);
     setMetricState({ ...metricState, metrics, isLoading: false });
     setAppSnackBarState({ ...appSnackBarState, message: null });
   };
@@ -67,7 +66,7 @@ function App() {
   const onClickUpdateSubscriptions = async (updateSubscriptionData: { metricKey: string, threshold: number }[]) => {
     setSubscriptionState({ ...subscriptionState, isLoading: true });
     setAppSnackBarState({ ...appSnackBarState, message: `Updating ${updateSubscriptionData.length} subscriptions...` });
-    const response = await QUERIES.updateSUbscriptions(authData.account.apiKeyHash, authData.user.id, updateSubscriptionData);
+    const response = await QUERIES.updateSUbscriptions(loginState.apiKey, authData.user.id, updateSubscriptionData);
     setSubscriptionState({ ...subscriptionState, isLoading: false, subscriptions: response.currentUserSubscriptions, associatedMetrics: response.associatedMetrics });
     setAppSnackBarState({ ...appSnackBarState, message: null });
   };
@@ -75,7 +74,7 @@ function App() {
   const onSelectMetric = async (metric: Metric) => {
     setSelectedMetricState({ ...selectedMetricState, metric, isLoading: true });
     setAppSnackBarState({ message: 'Loading data points' });
-    const dataPoints = await QUERIES.getMetricDataPoints(authData.account.apiKeyHash, metric.key);
+    const dataPoints = await QUERIES.getMetricDataPoints(loginState.apiKey, metric.key);
     setSelectedMetricState({ ...selectedMetricState, isLoading: false, dataPoints, metric });
     setAppSnackBarState({ message: null });
   };
@@ -89,7 +88,7 @@ function App() {
     if (!selectedMetric) return;
     setSelectedMetricState({ ...selectedMetricState, dataPoints: [], isLoading: true });
     setAppSnackBarState({ message: 'Loading data points' });
-    const dataPoints = await QUERIES.getMetricDataPoints(authData.account.apiKeyHash, selectedMetric.key);
+    const dataPoints = await QUERIES.getMetricDataPoints(loginState.apiKey, selectedMetric.key);
     setSelectedMetricState({ ...selectedMetricState, dataPoints, isLoading: false });
     setAppSnackBarState({ message: null });
   };
@@ -97,7 +96,7 @@ function App() {
   const onRefreshMetricAlerts = async () => {
     setMetricAlertState({ ...metricAlertState, isLoading: true });
     setAppSnackBarState({ message: 'Refreshing metric alerts...' });
-    const metricAlerts = await QUERIES.getAlertHistory(authData.account.apiKeyHash, authData.user.id);
+    const metricAlerts = await QUERIES.getAlertHistory(loginState.apiKey, authData.user.id);
     setMetricAlertState({ ...metricAlertState, metricAlerts, isLoading: false });
     setAppSnackBarState({ message: null });
   };
