@@ -8,7 +8,7 @@ function AppSnackBar(props: { appSnackBarState: AppSnackBarState }) {
     <Snackbar
       open={!!props.appSnackBarState.message}
       message={props.appSnackBarState.message}
-      action={<CircularProgress size={40} />}
+      action={<CircularProgress size={30} />}
     />
   );
 }
