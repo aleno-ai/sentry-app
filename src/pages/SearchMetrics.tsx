@@ -17,7 +17,7 @@ function SearchMetrics(props: {
 
   return (
     <>
-      <Typography variant="h4" gutterBottom>Search Metrics</Typography>
+      <Typography variant="h4" gutterBottom>Search metrics</Typography>
       <Typography gutterBottom>Search parameters (you can provide multiple addresses separated by a coma)</Typography>
       <Grid container spacing={2} style={{ marginTop: '0.5rem' }}>
         <Grid item xs={2}>

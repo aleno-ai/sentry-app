@@ -12,7 +12,7 @@ function MySubscriptions(props: {
   console.log('Render', metricWithThreshold.length);
   return (
     <>
-      <Typography variant="h4" gutterBottom>Your subscriptions</Typography>
+      <Typography variant="h4" gutterBottom>Active subscriptions</Typography>
       <MetricTable metricWithThresholds={metricWithThreshold} isLoading={props.subscriptionState.isLoading} onClickUpdateSubscriptions={props.onClickUpdateSubscriptions} />
     </>
   );
