@@ -50,10 +50,9 @@ type MetricAlert = {
     updatedAt: string
 };
 
-type LoginState = {
+type AuthState = {
     isLoading: boolean
-    apiKey: string
-    authData: { account: Account, user: User } | null
+    authData: { apiKey: string, account: Account, user: User } | null
 }
 
 type NavState = {
@@ -71,10 +70,12 @@ type MetricState = {
     isLoading: boolean
 }
 
+type Point = { timestamp: number, value: number }
+
 type SelectedMetricState = {
     metric: Metric | null
     isLoading: boolean
-    dataPoints: { timestamp: number, value: number }[]
+    dataPoints: Point[]
 }
 
 type AppSnackBarState = {
@@ -87,7 +88,7 @@ type MetricAlertState = {
 }
 
 type AppState = {
-    loginState: LoginState
+    authState: AuthState
     navState: NavState
     subscriptionState: SubscriptionState
     metricState: MetricState
@@ -101,7 +102,7 @@ export type {
   User,
   Subscription,
   Metric,
-  LoginState,
+  AuthState,
   NavState,
   SubscriptionState,
   MetricState,
@@ -110,4 +111,5 @@ export type {
   AppSnackBarState,
   MetricAlert,
   MetricAlertState,
+  Point,
 };

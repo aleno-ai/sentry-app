@@ -42,8 +42,8 @@ function SelectedMetricDialog(props: {
         ) : (
           <LineChart
             xAxis={[{ data: xAxis, scaleType: 'time', label: 'date' }]}
-            yAxis={[{ label: props.selectedMetricState.metric?.name }]}
-            series={[{ data: yAxis }]}
+            series={[{ curve: 'linear', data: yAxis }]}
+            margin={{ left: 200, right: 200, top: 200, bottom: 200 }}
           />
         )}
       </DialogContent>
