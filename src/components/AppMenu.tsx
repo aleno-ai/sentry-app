@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, Tab, Tabs } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 import { NavState } from '../misc/types';
 import HeaderLogo from '../assets/aleno-header.png';
 
