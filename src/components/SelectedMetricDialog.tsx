@@ -40,11 +40,14 @@ function SelectedMetricDialog(props: {
         {props.selectedMetricState.isLoading ? (
           <Typography>Loading data points...</Typography>
         ) : (
-          <LineChart
-            xAxis={[{ data: xAxis, scaleType: 'time', label: 'date' }]}
-            series={[{ curve: 'linear', data: yAxis, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) }]}
-            margin={{ left: 200, right: 200, top: 200, bottom: 200 }}
-          />
+          <>
+            <Typography variant="h5" style={{ marginLeft: 100 }}>Last 100 updates on {title}</Typography>
+            <LineChart
+              xAxis={[{ data: xAxis, scaleType: 'time', label: 'date' }]}
+              series={[{ curve: 'linear', data: yAxis, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) }]}
+              margin={{ left: 100, right: 100, top: 30, bottom: 200 }}
+            />
+          </>
         )}
       </DialogContent>
     </Dialog>
