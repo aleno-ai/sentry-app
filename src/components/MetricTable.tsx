@@ -63,7 +63,9 @@ function MetricLine(props: { onSelectMetric: (metric: Metric) => void, isLoading
   const onChange = (s: string) => {
     setInputValue(s);
     const value = parseFloat(s);
-    if (!Number.isNaN(value) && !utils.isFloat(inputValue)) props.onThresholdUpdate({ metricKey: props.metricWithThreshold.metric.key, threshold: value });
+    if (!Number.isNaN(value) && utils.isFloat(s)) {
+      props.onThresholdUpdate({ metricKey: props.metricWithThreshold.metric.key, threshold: value });
+    }
   };
 
   return (
