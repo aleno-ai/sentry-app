@@ -10,8 +10,10 @@ const tabWidth = 280;
 function AppMenu(props: { navState: NavState, onClickTab: (tabIndex: number) => void }) {
   return (
     <Box sx={{ borderBottom: 1, borderColor: 'divider' }} display="flex">
-      <div style={{ marginLeft: 24, marginRight: 24, display: 'flex', alignItems: 'center' }}>
-        <img src={HeaderLogo} alt="Logo" style={{ width: 150, height: 38, objectFit: 'contain' }} />
+      <div style={{ marginLeft: 24, marginRight: 24, width: 260, display: 'flex', alignItems: 'center' }}>
+        <a href="https://docs.aleno.ai/">
+          <img src={HeaderLogo} alt="Logo" style={{ width: 110, height: 34, objectFit: 'contain' }} />
+        </a>
       </div>
       <Tabs value={props.navState.tabIndex} onChange={(e: any, newTabValue: number) => props.onClickTab(newTabValue)} aria-label="basic tabs example">
         <Tab label="METRICS" {...a11yProps(0)} style={{ width: tabWidth }} />
