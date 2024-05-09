@@ -166,6 +166,6 @@ const realApi: SentryApiInterface = {
   },
 };
 
-const SENTRY_API = fakeApi;
+const SENTRY_API = realApi;
 
 export default SENTRY_API;
