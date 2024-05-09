@@ -65,10 +65,13 @@ function formatNumber(inputValue: number, withSign: boolean = false) {
   return `${sign}${(value / 1_000 ** e).toFixed(2)}${unit}`.replace('.00', '');
 }
 
+const isFloat = (value: string): boolean => /^\d*\.?\d+$/.test(value);
+
 export default {
   sleep,
   durationString,
   getMetricsWithThresholds,
   timeSince,
   formatNumber,
+  isFloat,
 };

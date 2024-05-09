@@ -5,6 +5,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Metric } from '../misc/types';
+import utils from '../misc/utils';
 
 type EntityRow = {
   rowKey: string, entityName: string, entityAddress: string, entityType: string, metricWithThresholds: { metric: Metric, threshold: number }[]
@@ -54,20 +55,17 @@ const getMetricShortName = (metric: Metric) => {
 
 function MetricLine(props: { onSelectMetric: (metric: Metric) => void, isLoading: boolean, metricWithThreshold: { metric: Metric, threshold: number }, onThresholdUpdate: (data: { metricKey: string, threshold: number }) => void }) {
   const metricShortName = getMetricShortName(props.metricWithThreshold.metric);
-  const [inputValue, setInputValue] = useState(props.metricWithThreshold.threshold);
+  const [inputValue, setInputValue] = useState(`${props.metricWithThreshold.threshold}`);
   useEffect(() => {
-    setInputValue(props.metricWithThreshold.threshold);
+    setInputValue(`${props.metricWithThreshold.threshold}`);
   }, [props.metricWithThreshold]);
+
   const onChange = (s: string) => {
-    const newValue = parseFloat(s);
-    if (newValue || (newValue === 0)) {
-      setInputValue(newValue);
-      props.onThresholdUpdate({ metricKey: props.metricWithThreshold.metric.key, threshold: newValue });
-    } else {
-      setInputValue(0);
-      props.onThresholdUpdate({ metricKey: props.metricWithThreshold.metric.key, threshold: 0 });
-    }
+    setInputValue(s);
+    const value = parseFloat(s);
+    if (!Number.isNaN(value) && !utils.isFloat(inputValue)) props.onThresholdUpdate({ metricKey: props.metricWithThreshold.metric.key, threshold: value });
   };
+
   return (
     <Grid container alignItems="center" style={{ marginTop: '1rem' }}>
       <Grid item xs={4}>
@@ -77,7 +75,7 @@ function MetricLine(props: { onSelectMetric: (metric: Metric) => void, isLoading
         <Button variant="outlined" size="small" onClick={() => props.onSelectMetric(props.metricWithThreshold.metric)}>View chart</Button>
       </Grid>
       <Grid item xs={4}>
-        <TextField disabled={props.isLoading} size="small" label="alert threshold (%)" onChange={(e) => onChange(e.target.value)} value={inputValue} />
+        <TextField error={!utils.isFloat(inputValue)} disabled={props.isLoading} size="small" label="alert threshold (%)" onChange={(e) => onChange(e.target.value)} value={inputValue} />
       </Grid>
     </Grid>
   );
