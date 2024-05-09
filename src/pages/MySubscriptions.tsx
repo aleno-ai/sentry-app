@@ -10,7 +10,6 @@ function MySubscriptions(props: {
   onClickUpdateSubscriptions: (updateSubscriptionData: { metricKey: string, threshold: number }[]) => Promise<void>
 }) {
   const metricWithThreshold = utils.getMetricsWithThresholds(props.subscriptionState.associatedMetrics, props.subscriptionState.subscriptions);
-  console.log('Render', metricWithThreshold.length);
   return (
     <>
       <Typography variant="h4" gutterBottom>Active subscriptions</Typography>
