@@ -16,13 +16,15 @@ interface SentryApiInterface {
 
 // ---------------------------------------- fake API (used in dev) ----------------------------------------
 
+const FAKE_SLEEP_MS = 500;
+
 const fakeApi: SentryApiInterface = {
   getAccountAndUser: async (apiKey: string) => {
-    await utils.sleep(2_000);
+    await utils.sleep(FAKE_SLEEP_MS);
     return { account: mockData.account, user: mockData.user };
   },
   getSubscriptions: async (apiKey: string, userId: string): Promise<{ subscriptions: Subscription[], associatedMetrics: Metric[] }> => {
-    await utils.sleep(2_000);
+    await utils.sleep(FAKE_SLEEP_MS);
     const shuffled = [...mockData.metrics].sort(() => 0.5 - Math.random());
     const selectedMetrics = shuffled.slice(0, 4);
     const subscriptions: Subscription[] = selectedMetrics.map((metric, index) => ({
@@ -36,26 +38,26 @@ const fakeApi: SentryApiInterface = {
     return { subscriptions, associatedMetrics: selectedMetrics };
   },
   searchMetricsByPoolAddresses: async (apiKey: string, addresses: string): Promise<Metric[]> => {
-    await utils.sleep(2_000);
+    await utils.sleep(FAKE_SLEEP_MS);
     return [...mockData.metrics];
   },
   searchMetricsByTokenAddresses: async (apiKey: string, addresses: string): Promise<Metric[]> => {
-    await utils.sleep(2_000);
+    await utils.sleep(FAKE_SLEEP_MS);
     return [...mockData.metrics];
   },
   searchMetricsByUserAddresses: async (apiKey: string, addresses: string): Promise<Metric[]> => {
-    await utils.sleep(2_000);
+    await utils.sleep(FAKE_SLEEP_MS);
     return [...mockData.metrics];
   },
   updateSubscriptions: async (apiKey: string, userId: string, subscriptionUpdateData: { metricKey: string, threshold: number }[]) => {
-    await utils.sleep(2_000);
+    await utils.sleep(FAKE_SLEEP_MS);
     const shuffled = [...mockData.metrics].sort(() => 0.5 - Math.random());
     const selectedMetrics = shuffled.slice(0, 4);
     const currentUserSubscriptions: Subscription[] = selectedMetrics.map((m, index) => ({ id: `${m.key}_${index}`, metricKey: m.key, startWindowTimestamp: 0, threshold: Math.floor(Math.random() * 10), userId }));
     return { currentUserSubscriptions, associatedMetrics: selectedMetrics };
   },
   getMetricDataPoints: async (apiKey: string, metricKey: string) => {
-    await utils.sleep(2_000);
+    await utils.sleep(FAKE_SLEEP_MS);
     const currentTimestamp = Math.floor(Date.now() / 1_000);
     const dataPoints: { timestamp: number, value: number }[] = [];
     for (let index = 0; index < 100; index += 1) {
@@ -66,7 +68,7 @@ const fakeApi: SentryApiInterface = {
     return dataPoints;
   },
   getAlertHistory: async (apiKey: string, userId: string) => {
-    await utils.sleep(2_000);
+    await utils.sleep(FAKE_SLEEP_MS);
     return [...mockData.fakeAlertHistory];
   },
 };
@@ -155,7 +157,7 @@ const realApi: SentryApiInterface = {
   },
   getAlertHistory: async (apiKey: string, userId: string) => {
     try {
-      const res = await axios.get(`${BASE_URL}/alertHistory?userId=${userId}`, { headers: { Authorization: apiKey } });
+      const res = await axios.get(`${BASE_URL}/alertHistory?userId=${userId}&pageSize=100`, { headers: { Authorization: apiKey } });
       const alertHistory = <MetricAlert[]>res.data.data;
       return alertHistory;
     } catch (error) {
