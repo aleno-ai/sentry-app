@@ -14,7 +14,7 @@ function MySubscriptions(props: {
   return (
     <>
       <Typography variant="h4" gutterBottom>Active subscriptions</Typography>
-      <MetricTable onSelectMetric={props.onSelectMetric} metricWithThresholds={metricWithThreshold} isLoading={props.subscriptionState.isLoading} onClickUpdateSubscriptions={props.onClickUpdateSubscriptions} />
+      <MetricTable titleMode="subscriptions" onSelectMetric={props.onSelectMetric} metricWithThresholds={metricWithThreshold} isLoading={props.subscriptionState.isLoading} onClickUpdateSubscriptions={props.onClickUpdateSubscriptions} />
     </>
   );
 }

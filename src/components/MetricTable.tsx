@@ -115,6 +115,7 @@ function EntityLine(props: { onSelectMetric: (metric: Metric) => void, isLoading
 
 function MetricTable(props: {
   isLoading: boolean,
+  titleMode: 'search' | 'subscriptions'
   metricWithThresholds: { metric: Metric, threshold: number }[],
   onClickUpdateSubscriptions: (updateSubscriptionData: { metricKey: string, threshold: number }[]) => Promise<void>,
   onSelectMetric: (metric: Metric) => void
@@ -144,11 +145,13 @@ function MetricTable(props: {
     props.onClickUpdateSubscriptions(updateSubscriptionData);
   };
 
+  const title = (props.titleMode === 'search') ? `Found ${props.metricWithThresholds.length} metrics on ${entityRows.length} entities` : `You have ${props.metricWithThresholds.length} metric subscriptions on ${entityRows.length} entities`;
+
   return (
-    <div style={{ marginTop: '3rem' }}>
+    <div style={{ marginTop: '2rem' }}>
       <Grid container justifyContent="space-between" spacing={2}>
         <Grid item>
-          <Typography variant="h5">Metric Table: {props.metricWithThresholds.length} metrics on {entityRows.length} entities</Typography>
+          <Typography variant="h6">{title}</Typography>
         </Grid>
         <Grid item xs={2}>
           <Button fullWidth variant="outlined" disabled={props.isLoading} onClick={onClickUpdate}>Update {thresholdUpdateMap.size} subscriptions</Button>

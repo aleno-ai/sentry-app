@@ -44,7 +44,7 @@ function SearchMetrics(props: {
           <Button variant="contained" style={{ height: '56px' }} fullWidth onClick={() => props.onClickSearch(searchMode, textInput)} disabled={isLoading}>Search metrics</Button>
         </Grid>
       </Grid>
-      <MetricTable onSelectMetric={props.onSelectMetric} metricWithThresholds={metricWithThresholds} isLoading={props.metricState.isLoading || props.subscriptionState.isLoading} onClickUpdateSubscriptions={props.onClickUpdateSubscriptions} />
+      <MetricTable titleMode="search" onSelectMetric={props.onSelectMetric} metricWithThresholds={metricWithThresholds} isLoading={props.metricState.isLoading || props.subscriptionState.isLoading} onClickUpdateSubscriptions={props.onClickUpdateSubscriptions} />
     </>
   );
 }
