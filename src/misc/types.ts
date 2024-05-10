@@ -1,10 +1,10 @@
 type Account = {
-    id: string
-    accountName: string
-    webhookUrl: string | null
-    apiKeyHash: string
-    apiKeyExpirationTimestamp: number
-}
+    id: string;
+    accountName: string;
+    alertOutputs: { telegramChannelId?: string, webhookUrl?: string };
+    apiKeyHash: string;
+    apiKeyExpirationTimestamp: number;
+  };
 
 type User = {
     id: string
@@ -87,6 +87,11 @@ type MetricAlertState = {
     isLoading: boolean
 }
 
+type AlertOutputsState = {
+    isLoading: boolean,
+    alertOutputs: { telegramChannelId?: string, webhookUrl?: string }
+}
+
 type AppState = {
     authState: AuthState
     navState: NavState
@@ -95,6 +100,7 @@ type AppState = {
     selectedMetricState: SelectedMetricState
     appSnackBarState: AppSnackBarState
     metricAlertState: MetricAlertState
+    alertOutputsState: AlertOutputsState
 }
 
 export type {
@@ -112,4 +118,5 @@ export type {
   MetricAlert,
   MetricAlertState,
   Point,
+  AlertOutputsState,
 };

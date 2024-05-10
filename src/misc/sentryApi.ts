@@ -12,7 +12,8 @@ interface SentryApiInterface {
     updateSubscriptions: (apiKey: string, userId: string, subscriptionUpdateData: { metricKey: string, threshold: number }[]) => Promise<{ currentUserSubscriptions: Subscription[], associatedMetrics: Metric[] } | null>
     getMetricDataPoints: (apiKey: string, metricKey: string) => Promise<Point[] | null>
     getAlertHistory: (apiKey: string, userId: string) => Promise<MetricAlert[] | null>
- | null}
+    updateAlertOutputs: (apiKey: string, alertOutputs: { telegramChannelId?: string, webhookUrl?: string }) => Promise<'success' | null>
+}
 
 // ---------------------------------------- fake API (used in dev) ----------------------------------------
 
@@ -71,6 +72,10 @@ const fakeApi: SentryApiInterface = {
     await utils.sleep(FAKE_SLEEP_MS);
     return [...mockData.fakeAlertHistory];
   },
+  updateAlertOutputs: async (): Promise<'success' | null> => {
+    await utils.sleep(FAKE_SLEEP_MS);
+    return 'success';
+  },
 };
 
 // ---------------------------------------- Real API ----------------------------------------
@@ -81,7 +86,7 @@ const realApi: SentryApiInterface = {
   getAccountAndUser: async (apiKey: string) => {
     try {
       const accountRes = await axios.get(`${BASE_URL}/account`, { headers: { Authorization: apiKey } });
-      const account = <Account>accountRes.data;
+      const account = <Account>accountRes.data.data;
       const usersRes = await axios.get(`${BASE_URL}/users`, { headers: { Authorization: apiKey } });
       const users = <User[]>usersRes.data.data;
       if (users.length === 0) return null;
@@ -160,6 +165,15 @@ const realApi: SentryApiInterface = {
       const res = await axios.get(`${BASE_URL}/alertHistory?userId=${userId}&pageSize=100`, { headers: { Authorization: apiKey } });
       const alertHistory = <MetricAlert[]>res.data.data;
       return alertHistory;
+    } catch (error) {
+      return null;
+    }
+  },
+  updateAlertOutputs: async (apiKey: string, alertOutputs: { telegramChannelId?: string, webhookUrl?: string }): Promise<'success' | null> => {
+    await utils.sleep(FAKE_SLEEP_MS);
+    try {
+      const res = await axios.put(`${BASE_URL}/account`, alertOutputs, { headers: { Authorization: apiKey } });
+      return 'success';
     } catch (error) {
       return null;
     }

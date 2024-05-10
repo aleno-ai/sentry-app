@@ -11,6 +11,7 @@ import AppMenu from './components/AppMenu';
 import MyAlerts from './pages/MyAlerts';
 import SelectedMetricDialog from './components/SelectedMetricDialog';
 import utils from './misc/utils';
+import AlertSettings from './pages/AlertSettings';
 
 const initialAppState: AppState = {
   authState: { isLoading: false, authData: null },
@@ -20,6 +21,7 @@ const initialAppState: AppState = {
   selectedMetricState: { metric: null, isLoading: false, dataPoints: [] },
   metricAlertState: { metricAlerts: [], isLoading: false },
   appSnackBarState: { message: null },
+  alertOutputsState: { isLoading: false, alertOutputs: {} },
 };
 
 function App() {
@@ -30,21 +32,25 @@ function App() {
   const [selectedMetricState, setSelectedMetricState] = useState(initialAppState.selectedMetricState);
   const [metricAlertState, setMetricAlertState] = useState(initialAppState.metricAlertState);
   const [appSnackBarState, setAppSnackBarState] = useState(initialAppState.appSnackBarState);
+  const [alertOutputsState, setAlertOutputsState] = useState(initialAppState.alertOutputsState);
 
   // ----------------------------------- LOADERS -----------------------------------
 
   const loadAuthState = async (providedApiKey: string): Promise<AuthState> => {
     setAuthState({ ...authState, isLoading: true });
+    setAlertOutputsState({ ...alertOutputsState, isLoading: true });
     setAppSnackBarState({ ...appSnackBarState, message: 'Connecting to Sentry' });
     const authResult = await SENTRY_API.getAccountAndUser(providedApiKey);
     if (authResult) {
       const { account, user } = authResult;
       const newAuthState = { ...authState, isLoading: false, authData: { account, user, apiKey: providedApiKey } };
       setAuthState(newAuthState);
+      setAlertOutputsState({ ...alertOutputsState, isLoading: false, alertOutputs: newAuthState.authData.account.alertOutputs });
       return newAuthState;
     }
     const initialAuthState = { ...initialAppState.authState };
     setAuthState(initialAuthState);
+    setAlertOutputsState({ ...initialAppState.alertOutputsState });
     setAppSnackBarState({ ...appSnackBarState, message: null });
     return initialAuthState;
   };
@@ -161,6 +167,19 @@ function App() {
     setAppSnackBarState({ message: null });
   };
 
+  const onClickUpdateAlertOutputs = async (data: { telegramChannelId?: string, webhookUrl?: string }) => {
+    if (!authState.authData) return;
+    setAlertOutputsState({ ...alertOutputsState, isLoading: true });
+    setAppSnackBarState({ message: 'Updating alert settings...' });
+    const res = await SENTRY_API.updateAlertOutputs(authState.authData.apiKey, data);
+    if (res) {
+      setAlertOutputsState({ alertOutputs: data, isLoading: false });
+    } else {
+      setAlertOutputsState({ ...alertOutputsState, alertOutputs: { ...alertOutputsState.alertOutputs }, isLoading: false });
+    }
+    setAppSnackBarState({ message: null });
+  };
+
   return (
     <div>
       {
@@ -171,6 +190,7 @@ function App() {
               { navState.tabIndex === 0 ? <SearchMetrics onSelectMetric={onSelectMetric} metricState={metricState} subscriptionState={subscriptionState} onClickSearch={onClickSearchMetrics} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
               { navState.tabIndex === 1 ? <MySubscriptions onSelectMetric={onSelectMetric} subscriptionState={subscriptionState} onClickUpdateSubscriptions={onClickUpdateSubscriptions} /> : null }
               { navState.tabIndex === 2 ? <MyAlerts metricAlertState={metricAlertState} onViewChart={onSelectMetric} onClickRefresh={onRefreshMetricAlerts} /> : null }
+              { navState.tabIndex === 3 ? <AlertSettings onUpdate={onClickUpdateAlertOutputs} isLoading={alertOutputsState.isLoading} alertOutputs={alertOutputsState.alertOutputs} /> : null }
             </Box>
           </>
         ) : (

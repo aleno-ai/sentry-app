@@ -5,7 +5,7 @@ const account: Account = {
   accountName: 'account name',
   apiKeyExpirationTimestamp: 1,
   apiKeyHash: 'aaaa',
-  webhookUrl: 'fake webhook url',
+  alertOutputs: { webhookUrl: 'fake_webhook_url', telegramChannelId: 'fake_telegram_chanel_id' },
 };
 
 const user: User = {

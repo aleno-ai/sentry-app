@@ -5,7 +5,7 @@ import HeaderLogo from '../assets/aleno-header.png';
 
 const a11yProps = (index: number) => ({ id: `simple-tab-${index}`, 'aria-controls': `simple-tabpanel-${index}` });
 
-const tabWidth = 280;
+const tabWidth = 180;
 
 function AppMenu(props: { navState: NavState, onClickTab: (tabIndex: number) => void }) {
   return (
@@ -16,9 +16,10 @@ function AppMenu(props: { navState: NavState, onClickTab: (tabIndex: number) => 
         </a>
       </div>
       <Tabs value={props.navState.tabIndex} onChange={(e: any, newTabValue: number) => props.onClickTab(newTabValue)} aria-label="basic tabs example">
-        <Tab label="METRICS" {...a11yProps(0)} style={{ width: tabWidth }} />
+        <Tab label="SEARCH METRICS" {...a11yProps(0)} style={{ width: tabWidth }} />
         <Tab label="SUBSCRIPTIONS" {...a11yProps(1)} style={{ width: tabWidth }} />
-        <Tab label="ALERTS" {...a11yProps(2)} style={{ width: tabWidth }} />
+        <Tab label="ALERTS HISTORY" {...a11yProps(2)} style={{ width: tabWidth }} />
+        <Tab label="ALERT SETTINGS" {...a11yProps(2)} style={{ width: tabWidth }} />
       </Tabs>
     </Box>
   );
