@@ -82,16 +82,7 @@ function SelectedMetricDialog(props: {
                 { color: '#2196f3', label: 'data points', curve: 'linear', data: yAxis, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) },
                 { color: '#f44336', label: 'Alert', curve: 'linear', area: true, data: yValuesMetricAlert, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) },
               ]}
-              yAxis={[
-                {
-                  min,
-                  max,
-                },
-                {
-                  min,
-                  max,
-                },
-              ]}
+              yAxis={[{ min, max }, { min, max }]}
               margin={{ left: 100, right: 100, top: 30, bottom: 200 }}
             />
           </>
