@@ -4,6 +4,12 @@ const sleep = (ms: number) => new Promise((resolve) => {
   setTimeout(resolve, ms);
 });
 
+const getCurrentTimestamp = () => {
+  const currentDate = new Date();
+  const currentTimestamp = Math.floor(currentDate.getTime() / 1000);
+  return currentTimestamp;
+};
+
 const getMetricsWithThresholds = (metrics: Metric[], subscriptions: Subscription[]) => {
   const subMap = new Map(subscriptions.map((s) => ([s.metricKey, s])));
   const withThresholdMetrics = new Map(metrics.map((metric) => ([metric.key, { metric, threshold: subMap.has(metric.key) ? subMap.get(metric.key)!.threshold : 0 }])));
@@ -38,8 +44,7 @@ const durationString = (fromTimestamp: number, toTimestamp: number) => {
 };
 
 function timeSince(timestamp: number) {
-  const currentDate = new Date();
-  const currentTimestamp = Math.floor(currentDate.getTime() / 1000);
+  const currentTimestamp = getCurrentTimestamp();
   return durationString(timestamp, currentTimestamp);
 }
 
@@ -74,4 +79,5 @@ export default {
   timeSince,
   formatNumber,
   isFloat,
+  getCurrentTimestamp,
 };

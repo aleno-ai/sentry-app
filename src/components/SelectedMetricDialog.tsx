@@ -41,7 +41,7 @@ function SelectedMetricDialog(props: {
           <Typography>Loading data points...</Typography>
         ) : (
           <>
-            <Typography variant="h5" style={{ marginLeft: 100 }}>Last 100 updates on {title}</Typography>
+            <Typography variant="h5" style={{ marginLeft: 100 }}>Last hour updates on {title}</Typography>
             <LineChart
               xAxis={[{ data: xAxis, scaleType: 'time', label: 'date' }]}
               series={[{ curve: 'linear', data: yAxis, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) }]}

@@ -153,16 +153,18 @@ const realApi: SentryApiInterface = {
   },
   getMetricDataPoints: async (apiKey: string, metricKey: string) => {
     try {
-      const res = await axios.get(`${BASE_URL}/metrics/records/range?key=${metricKey}`, { headers: { Authorization: apiKey } });
+      const fromTimestamp = utils.getCurrentTimestamp() - (60 * 60);
+      const res = await axios.get(`${BASE_URL}/metrics/records/range?key=${metricKey}&fromTimestamp=${fromTimestamp}`, { headers: { Authorization: apiKey } });
       const dataPoints = <Point[]>res.data.data.points;
-      return dataPoints.slice(-100);
+      return dataPoints;
     } catch (error) {
+      console.log(error);
       return null;
     }
   },
   getAlertHistory: async (apiKey: string, userId: string) => {
     try {
-      const res = await axios.get(`${BASE_URL}/alertHistory?userId=${userId}&pageSize=100`, { headers: { Authorization: apiKey } });
+      const res = await axios.get(`${BASE_URL}/alertHistory?userId=${userId}&pageSize=50`, { headers: { Authorization: apiKey } });
       const alertHistory = <MetricAlert[]>res.data.data;
       return alertHistory;
     } catch (error) {
