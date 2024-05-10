@@ -79,8 +79,8 @@ function SelectedMetricDialog(props: {
             <LineChart
               xAxis={[{ data: xAxis, scaleType: 'time', label: 'date' }]}
               series={[
-                { label: 'data points', curve: 'linear', data: yAxis, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) },
-                { label: 'Alert', curve: 'linear', area: true, data: yValuesMetricAlert, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) },
+                { color: '#2196f3', label: 'data points', curve: 'linear', data: yAxis, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) },
+                { color: '#f44336', label: 'Alert', curve: 'linear', area: true, data: yValuesMetricAlert, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) },
               ]}
               yAxis={[
                 {
