@@ -8,14 +8,16 @@ import Divider from '@mui/material/Divider';
 import { MetricAlert, Metric, MetricAlertState } from '../misc/types';
 import utils from '../misc/utils';
 
-function MetricAlertLine(props: { metricAlert: MetricAlert, onViewChart: (metric: Metric) => Promise<void> }) {
+function MetricAlertLine(props: { metricAlert: MetricAlert, onViewChart: (metric: Metric, metricAlert: MetricAlert | null) => Promise<void> }) {
   const { metricAlert } = props;
   const { fromPoint, toPoint, metricPercentVariation, metric } = metricAlert;
-  const timeSince = utils.timeSince(toPoint.timestamp);
-  const withinTime = utils.durationString(fromPoint.timestamp, toPoint.timestamp);
-  const percentVariation = Math.abs(metricPercentVariation).toFixed(2);
-  const percentVariationString = `${metricPercentVariation > 0 ? '+' : '-'}${percentVariation} %`;
-  const varColor = metricPercentVariation > 0 ? 'rgb(39, 174, 96)' : 'rgb(231, 76, 60)';
+  const {
+    timeAgo,
+    withinTime,
+    percentVariation,
+    percentVariationString,
+    varColor,
+  } = utils.getMetricAlertInfo(metricAlert);
 
   return (
     <Accordion elevation={3}>
@@ -34,10 +36,10 @@ function MetricAlertLine(props: { metricAlert: MetricAlert, onViewChart: (metric
             <Typography>In {withinTime}</Typography>
           </Grid>
           <Grid item xs={2}>
-            <Typography>{timeSince} ago</Typography>
+            <Typography>{timeAgo} ago</Typography>
           </Grid>
           <Grid item xs={2}>
-            <Button size="small" variant="outlined" onClick={() => props.onViewChart(metric)}>view chart</Button>
+            <Button size="small" variant="outlined" onClick={() => props.onViewChart(metric, metricAlert)}>view chart</Button>
           </Grid>
         </Grid>
       </AccordionSummary>
@@ -91,7 +93,7 @@ function MetricAlertLine(props: { metricAlert: MetricAlert, onViewChart: (metric
   );
 }
 
-function MyAlerts(props: { metricAlertState: MetricAlertState, onViewChart: (metric: Metric) => Promise<void>, onClickRefresh: () => Promise<void> }) {
+function MyAlerts(props: { metricAlertState: MetricAlertState, onViewChart: (metric: Metric, metricAlert: MetricAlert | null) => Promise<void>, onClickRefresh: () => Promise<void> }) {
   return (
     <>
       <Grid container justifyContent="space-between" alignItems="flex-end">

@@ -4,7 +4,7 @@ import axios from 'axios';
 import SearchMetrics from './pages/SearchMetrics';
 import MySubscriptions from './pages/MySubscriptions';
 import Login from './pages/Login';
-import { AppState, AuthState, Metric } from './misc/types';
+import { AppState, AuthState, Metric, MetricAlert } from './misc/types';
 import SENTRY_API from './misc/sentryApi';
 import AppSnackBar from './components/AppSnackBar';
 import AppMenu from './components/AppMenu';
@@ -18,7 +18,7 @@ const initialAppState: AppState = {
   navState: { tabIndex: 0 },
   subscriptionState: { subscriptions: [], associatedMetrics: [], isLoading: false },
   metricState: { metrics: [], isLoading: false },
-  selectedMetricState: { metric: null, isLoading: false, dataPoints: [] },
+  selectedMetricState: { metric: null, isLoading: false, dataPoints: [], metricAlert: null },
   metricAlertState: { metricAlerts: [], isLoading: false },
   appSnackBarState: { message: null },
   alertOutputsState: { isLoading: false, alertOutputs: {} },
@@ -122,13 +122,13 @@ function App() {
     setAppSnackBarState({ ...appSnackBarState, message: null });
   };
 
-  const onSelectMetric = async (metric: Metric) => {
+  const onSelectMetric = async (metric: Metric, metricAlert: MetricAlert | null) => {
     if (!authState.authData) return;
-    setSelectedMetricState({ ...selectedMetricState, metric, isLoading: true });
+    setSelectedMetricState({ ...selectedMetricState, metric, metricAlert, isLoading: true });
     setAppSnackBarState({ message: 'Loading data points' });
     const dataPoints = await SENTRY_API.getMetricDataPoints(authState.authData.apiKey, metric.key);
     if (dataPoints) {
-      setSelectedMetricState({ ...selectedMetricState, isLoading: false, dataPoints, metric });
+      setSelectedMetricState({ ...selectedMetricState, metric, metricAlert, dataPoints, isLoading: false });
     } else {
       setSelectedMetricState({ ...initialAppState.selectedMetricState });
     }
@@ -136,7 +136,7 @@ function App() {
   };
 
   const onCloseSelectedMetric = () => {
-    setSelectedMetricState({ ...selectedMetricState, metric: null, dataPoints: [] });
+    setSelectedMetricState({ ...initialAppState.selectedMetricState });
   };
 
   const onRefreshMetricDataPoints = async () => {

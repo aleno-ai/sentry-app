@@ -158,7 +158,6 @@ const realApi: SentryApiInterface = {
       const dataPoints = <Point[]>res.data.data.points;
       return dataPoints;
     } catch (error) {
-      console.log(error);
       return null;
     }
   },

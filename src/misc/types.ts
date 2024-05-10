@@ -76,6 +76,7 @@ type SelectedMetricState = {
     metric: Metric | null
     isLoading: boolean
     dataPoints: Point[]
+    metricAlert: MetricAlert | null
 }
 
 type AppSnackBarState = {

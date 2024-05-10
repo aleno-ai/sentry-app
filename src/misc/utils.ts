@@ -1,4 +1,4 @@
-import { Metric, Subscription } from '../misc/types';
+import { Metric, MetricAlert, Subscription } from '../misc/types';
 
 const sleep = (ms: number) => new Promise((resolve) => {
   setTimeout(resolve, ms);
@@ -43,7 +43,7 @@ const durationString = (fromTimestamp: number, toTimestamp: number) => {
   return `${Math.floor(seconds)} seconds`;
 };
 
-function timeSince(timestamp: number) {
+function getTimeAgo(timestamp: number) {
   const currentTimestamp = getCurrentTimestamp();
   return durationString(timestamp, currentTimestamp);
 }
@@ -72,12 +72,29 @@ function formatNumber(inputValue: number, withSign: boolean = false) {
 
 const isFloat = (value: string): boolean => /^\d*\.?\d+$/.test(value);
 
+const getMetricAlertInfo = (metricAlert: MetricAlert) => {
+  const { fromPoint, toPoint, metricPercentVariation, metric } = metricAlert;
+  const timeAgo = getTimeAgo(toPoint.timestamp);
+  const withinTime = durationString(fromPoint.timestamp, toPoint.timestamp);
+  const percentVariation = Math.abs(metricPercentVariation).toFixed(2);
+  const percentVariationString = `${metricPercentVariation > 0 ? '+' : '-'}${percentVariation} %`;
+  const varColor = metricPercentVariation > 0 ? 'rgb(39, 174, 96)' : 'rgb(231, 76, 60)';
+  return {
+    timeAgo,
+    withinTime,
+    percentVariation,
+    percentVariationString,
+    varColor,
+  };
+};
+
 export default {
   sleep,
   durationString,
   getMetricsWithThresholds,
-  timeSince,
+  getTimeAgo,
   formatNumber,
   isFloat,
   getCurrentTimestamp,
+  getMetricAlertInfo,
 };

@@ -11,7 +11,7 @@ function AppMenu(props: { navState: NavState, onClickTab: (tabIndex: number) => 
   return (
     <Box sx={{ borderBottom: 1, borderColor: 'divider' }} display="flex">
       <div style={{ marginLeft: 24, marginRight: 24, width: 260, display: 'flex', alignItems: 'center' }}>
-        <a href="https://docs.aleno.ai/">
+        <a href="https://docs.aleno.ai/" target="_blank" rel="noreferrer">
           <img src={HeaderLogo} alt="Logo" style={{ width: 110, height: 34, objectFit: 'contain' }} />
         </a>
       </div>
