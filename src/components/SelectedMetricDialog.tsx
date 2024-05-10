@@ -47,7 +47,9 @@ function SelectedMetricDialog(props: {
       if (dataPoints[0].timestamp > metricAlert.fromPoint.timestamp) {
         const firstPointTimeAgo = utils.getTimeAgo(metricAlert.fromPoint.timestamp);
         const lastPointTimeAgo = utils.getTimeAgo(metricAlert.toPoint.timestamp);
-        alertIsTooOldString = `Alert #${metricAlert.id} is too old to be fully displayed (first point: ${firstPointTimeAgo} ago, last point: ${lastPointTimeAgo} ago)`;
+        console.log('last data timestamp', dataPoints[dataPoints.length - 1].timestamp);
+        console.log('last alert timestamp', metricAlert.toPoint.timestamp);
+        alertIsTooOldString = dataPoints[0].timestamp > metricAlert.toPoint.timestamp ? `Alert #${metricAlert.id} is too old to be displayed (last point: ${lastPointTimeAgo} ago)` : `Alert #${metricAlert.id} is too old to be fully displayed (first point: ${firstPointTimeAgo} ago, last point: ${lastPointTimeAgo} ago)`;
       }
     }
   }
