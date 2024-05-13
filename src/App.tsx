@@ -171,7 +171,10 @@ function App() {
     if (!authState.authData) return;
     setAlertOutputsState({ ...alertOutputsState, isLoading: true });
     setAppSnackBarState({ message: 'Updating alert settings...' });
-    const res = await SENTRY_API.updateAlertOutputs(authState.authData.apiKey, data);
+    const payload: { telegramChannelId: string | null, webhookUrl: string | null } = { telegramChannelId: null, webhookUrl: null };
+    if (data.telegramChannelId && data.telegramChannelId !== '') payload.telegramChannelId = data.telegramChannelId;
+    if (data.webhookUrl && data.webhookUrl !== '') payload.webhookUrl = data.webhookUrl;
+    const res = await SENTRY_API.updateAlertOutputs(authState.authData.apiKey, payload);
     if (res) {
       setAlertOutputsState({ alertOutputs: data, isLoading: false });
     } else {

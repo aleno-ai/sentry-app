@@ -12,7 +12,7 @@ interface SentryApiInterface {
     updateSubscriptions: (apiKey: string, userId: string, subscriptionUpdateData: { metricKey: string, threshold: number }[]) => Promise<{ currentUserSubscriptions: Subscription[], associatedMetrics: Metric[] } | null>
     getMetricDataPoints: (apiKey: string, metricKey: string) => Promise<Point[] | null>
     getAlertHistory: (apiKey: string, userId: string) => Promise<MetricAlert[] | null>
-    updateAlertOutputs: (apiKey: string, alertOutputs: { telegramChannelId?: string, webhookUrl?: string }) => Promise<'success' | null>
+    updateAlertOutputs: (apiKey: string, alertOutputs: { telegramChannelId: string | null, webhookUrl: string | null }) => Promise<'success' | null>
 }
 
 // ---------------------------------------- fake API (used in dev) ----------------------------------------
@@ -170,7 +170,7 @@ const realApi: SentryApiInterface = {
       return null;
     }
   },
-  updateAlertOutputs: async (apiKey: string, alertOutputs: { telegramChannelId?: string, webhookUrl?: string }): Promise<'success' | null> => {
+  updateAlertOutputs: async (apiKey: string, alertOutputs: { telegramChannelId: string | null, webhookUrl: string | null }): Promise<'success' | null> => {
     await utils.sleep(FAKE_SLEEP_MS);
     try {
       const res = await axios.put(`${BASE_URL}/account`, alertOutputs, { headers: { Authorization: apiKey } });
