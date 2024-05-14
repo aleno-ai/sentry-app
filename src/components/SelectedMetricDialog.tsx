@@ -19,44 +19,29 @@ function SelectedMetricDialog(props: {
     selectedMetricState: SelectedMetricState,
     onRefreshMetricDataPoints: () => Promise<void>
 }) {
-  const { metric, metricAlert, dataPoints } = props.selectedMetricState;
+  const { metric, metricAlert, dataPoints, isLoading } = props.selectedMetricState;
 
-  let title = '';
-  if (!metric) {
-    title = 'closing...';
-  } else if (!metricAlert) {
-    title = metric.name;
-  } else {
-    const metricAlertInfo = utils.getMetricAlertInfo(metricAlert);
-    title = `${metric.name} (alert: ${metricAlertInfo.percentVariationString} in ${metricAlertInfo.withinTime})`;
-  }
+  const title = metric ? metric.name : 'closing...';
+
   const xAxis = dataPoints.map((p) => new Date(p.timestamp * 1_000));
   const yAxis = dataPoints.map((p) => p.value);
+  const alertYAxis: (number| null)[] = [];
 
-  const yValuesMetricAlert: (number | null)[] = [];
-  let alertIsTooOldString: string | null = null;
-  if (metricAlert) {
-    if (dataPoints.length > 0) {
-      dataPoints.forEach((p) => {
-        if (p.timestamp >= metricAlert.fromPoint.timestamp && p.timestamp <= metricAlert.toPoint.timestamp) {
-          yValuesMetricAlert.push(p.value);
-        } else {
-          yValuesMetricAlert.push(null);
-        }
-      });
-      if (dataPoints[0].timestamp > metricAlert.fromPoint.timestamp) {
-        const firstPointTimeAgo = utils.getTimeAgo(metricAlert.fromPoint.timestamp);
-        const lastPointTimeAgo = utils.getTimeAgo(metricAlert.toPoint.timestamp);
-        console.log('last data timestamp', dataPoints[dataPoints.length - 1].timestamp);
-        console.log('last alert timestamp', metricAlert.toPoint.timestamp);
-        alertIsTooOldString = dataPoints[0].timestamp > metricAlert.toPoint.timestamp ? `Alert #${metricAlert.id} is too old to be displayed (last point: ${lastPointTimeAgo} ago)` : `Alert #${metricAlert.id} is too old to be fully displayed (first point: ${firstPointTimeAgo} ago, last point: ${lastPointTimeAgo} ago)`;
+  let alertSubTitle: string | null = null;
+  if (metricAlert && dataPoints.length > 0) {
+    const metricAlertInfo = utils.getMetricAlertInfo(metricAlert);
+    alertSubTitle = metricAlert.fromPoint.timestamp < dataPoints[0].timestamp ? `Alert "${metricAlertInfo.percentVariationString} in ${metricAlertInfo.withinTime}" is too old to be fully displayed` : `Alert "${metricAlertInfo.percentVariationString} in ${metricAlertInfo.withinTime}"`;
+    dataPoints.forEach((point) => {
+      if (point.timestamp < metricAlert.fromPoint.timestamp) {
+        alertYAxis.push(null);
+      } else if (point.timestamp < metricAlert.toPoint.timestamp) {
+        alertYAxis.push(point.value);
+      } else {
+        alertYAxis.push(null);
       }
-    }
+    });
   }
-
-  // @ts-ignore
-  const allYValues: number[] = [...yValuesMetricAlert, ...yAxis].filter((v) => v !== null);
-  const [min, max] = [Math.min(...allYValues), Math.max(...allYValues)];
+  const [min, max] = yAxis.length > 0 ? [Math.min(...yAxis), Math.max(...yAxis)] : [0, 0];
 
   return (
     <Dialog
@@ -72,23 +57,22 @@ function SelectedMetricDialog(props: {
         </Toolbar>
       </AppBar>
       <DialogContent>
-        {props.selectedMetricState.isLoading ? (
-          <Typography>Loading data points...</Typography>
-        ) : (
-          <>
-            <Typography variant="h5" style={{ marginLeft: 100 }}>Last hour updates on {title}</Typography>
-            { alertIsTooOldString ? <Typography style={{ marginLeft: 100 }}>{alertIsTooOldString}</Typography> : null }
+        <Typography variant="h5" style={{ marginLeft: 100 }}>Daily data on {title}</Typography>
+        {props.selectedMetricState.isLoading ? (<Typography style={{ marginLeft: 100 }}>Loading data points...</Typography>) : null}
+        {alertSubTitle ? (<Typography style={{ marginLeft: 100 }}>{alertSubTitle}</Typography>) : null}
+        {
+          xAxis.length > 0 ? (
             <LineChart
               xAxis={[{ data: xAxis, scaleType: 'time', label: 'date' }]}
               series={[
-                { color: '#2196f3', label: 'data points', curve: 'linear', data: yAxis, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) },
-                { color: '#f44336', label: 'Alert', curve: 'linear', area: true, data: yValuesMetricAlert, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) },
+                { color: '#2196f3', curve: 'linear', data: yAxis, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) },
+                { color: '#f44336', curve: 'linear', area: true, data: alertYAxis, valueFormatter: (v) => (v === null ? '' : v.toFixed(7)) },
               ]}
               yAxis={[{ min, max }, { min, max }]}
               margin={{ left: 100, right: 100, top: 30, bottom: 200 }}
             />
-          </>
-        )}
+          ) : null
+        }
       </DialogContent>
     </Dialog>
   );

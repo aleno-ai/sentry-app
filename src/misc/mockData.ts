@@ -1,3 +1,4 @@
+import fakeDataPoints from './data/fakeDataPoints';
 import { Account, Metric, MetricAlert, Subscription, User } from './types';
 
 const account: Account = {
@@ -794,4 +795,4 @@ const fakeAlertHistory: MetricAlert[] = [
   },
 ];
 
-export default { account, user, metrics, subscriptions, associatedMetrics, fakeAlertHistory };
+export default { account, user, metrics, subscriptions, associatedMetrics, fakeAlertHistory, fakeDataPoints };

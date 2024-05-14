@@ -59,14 +59,7 @@ const fakeApi: SentryApiInterface = {
   },
   getMetricDataPoints: async (apiKey: string, metricKey: string) => {
     await utils.sleep(FAKE_SLEEP_MS);
-    const currentTimestamp = Math.floor(Date.now() / 1_000);
-    const dataPoints: { timestamp: number, value: number }[] = [];
-    for (let index = 0; index < 100; index += 1) {
-      const timestamp = currentTimestamp - (100 - index) * 12;
-      const value = 30 + (index / 10) + Math.floor(Math.random() * 5);
-      dataPoints.push({ timestamp, value });
-    }
-    return dataPoints;
+    return mockData.fakeDataPoints.data.points;
   },
   getAlertHistory: async (apiKey: string, userId: string) => {
     await utils.sleep(FAKE_SLEEP_MS);
@@ -153,8 +146,7 @@ const realApi: SentryApiInterface = {
   },
   getMetricDataPoints: async (apiKey: string, metricKey: string) => {
     try {
-      const fromTimestamp = utils.getCurrentTimestamp() - (60 * 60);
-      const res = await axios.get(`${BASE_URL}/metrics/records/range?key=${metricKey}&fromTimestamp=${fromTimestamp}`, { headers: { Authorization: apiKey } });
+      const res = await axios.get(`${BASE_URL}/metrics/records/range?key=${metricKey}&granularity=5m`, { headers: { Authorization: apiKey } });
       const dataPoints = <Point[]>res.data.data.points;
       return dataPoints;
     } catch (error) {
