@@ -28,7 +28,7 @@ function SearchMetrics(props: {
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={searchMode}
-              label="Age"
+              label="Search by"
               onChange={(e) => setSearchMode(e.target.value)}
             >
               <MenuItem value="USER_ADDRESSES">My addresses</MenuItem>
