@@ -1,4 +1,6 @@
-# Getting Started with Create React App
+# Sentry app
+
+This is a demo showcasing how Sentry API can be integrated into an app.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
